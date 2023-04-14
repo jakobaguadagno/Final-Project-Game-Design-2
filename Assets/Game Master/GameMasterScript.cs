@@ -24,6 +24,13 @@ public class GameMasterScript : NetworkComponent
                 {
                     player.DisableCanvasLMS();
                 }
+
+                PlayerCharacter[] playerS = GameObject.FindObjectsOfType<PlayerCharacter>();
+
+                foreach (PlayerCharacter player in playerS)
+                {
+                    player.EnableCanvasIG();
+                }
             }
         }
         if(flag == "ENDSCREEN")
@@ -50,6 +57,10 @@ public class GameMasterScript : NetworkComponent
     {
         if (IsServer)
         {
+
+            GameObject lan = GameObject.Find("LanNetworkManager");
+            lan.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+
             serverManager = GameObject.FindObjectsOfType<GenericCore_Web>();
 
             int[] pScore = new int[4];
@@ -60,16 +71,19 @@ public class GameMasterScript : NetworkComponent
     
             while (!GameStarted)
             {
-                if (MyCore.Connections.Count > 1)
+                lobbyManager = GameObject.FindObjectsOfType<LobbyManagerScript>();
+                if(MyCore.Connections.Count == lobbyManager.Length)
                 {
-                    GameStarted = true;
-                    lobbyManager = GameObject.FindObjectsOfType<LobbyManagerScript>();
-                    foreach (LobbyManagerScript player in lobbyManager)
+                    if (MyCore.Connections.Count >= 1)
                     {
-                        if (!player.ready)
+                        GameStarted = true;
+                        foreach (LobbyManagerScript player in lobbyManager)
                         {
-                            GameStarted = false;
-                            break;
+                            if (!player.ready)
+                            {
+                                GameStarted = false;
+                                break;
+                            }
                         }
                     }
                 }
@@ -87,6 +101,8 @@ public class GameMasterScript : NetworkComponent
                         temp = MyCore.NetCreateObject(player.character, player.Owner, GameObject.Find("Spawn 1").transform.position);
                         pc = temp.GetComponent<PlayerCharacter>();
                         pc.playerName = player.playerName;
+                        MyCore.NetCreateObject(5, 0, GameObject.Find("Test").transform.position);
+                        MyCore.NetCreateObject(5, 0, GameObject.Find("Test 2").transform.position);
                         //pc.ColorSelected = player.colorSelect;
                         Debug.Log("Player: " + (1+player.Owner));
                         Debug.Log(pc.playerName);
@@ -177,7 +193,7 @@ public class GameMasterScript : NetworkComponent
     public IEnumerator PauseGame(float s)
     {
         yield return new WaitForSeconds(s);
-        paused = false;
+        //paused = false;
     }
 
     public IEnumerator EndGame(float s)

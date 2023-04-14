@@ -288,6 +288,9 @@ public class ExclusiveString : IEnumerable<char>
     }
 }
 
+//GenCore is the new Connection 2
+//We no longer need a seperate threaded socket + connection class.
+//GenCore has a seperate variable for server (wss) and for client (clientWS)
 public class GenCore : WebSocketBehavior
 {
     GenericCore_Web owner;
@@ -326,7 +329,6 @@ public class GenCore : WebSocketBehavior
             {
                 // Reading a plain text message
                 var message = System.Text.Encoding.UTF8.GetString(bytes);
-//                Debug.Log(message);
                 //owner.TCPHandleMessage(this, message);
                 this.msg.Append(message);
             };
@@ -370,19 +372,7 @@ public class GenCore : WebSocketBehavior
     {
         try
         {
-            if(this == null)
-            {
-               Debug.Log("this is null");
-            }
-            if(e == null)
-            {
-                Debug.Log("e is null");
-            }
-            if(e.Data == null)
-            {
-                Debug.Log("Data is null");
-            }
-//            Debug.Log(e.Data);
+            //Debug.Log(e.Data);
             if (e.Data.StartsWith("ID#"))
             {
                 if (int.Parse(e.Data.Split('#')[2]) == owner.AppNumber)
@@ -392,8 +382,8 @@ public class GenCore : WebSocketBehavior
                     owner.Connections.Add(ConnectionID, this);
                 }
             }
-                    msg.Append(e.Data);
-            //owner.TCPHandleMessage(this, e.Data);
+            //this is necessary to communicate between threads.
+            msg.Append(e.Data);
         }
         catch (Exception ex)
         {
@@ -418,7 +408,6 @@ public class GenericCore_Web : MonoBehaviour
     public Text OutputConsole;
     public int MaxConsoleLogSize = 1024;
     public bool UsingUDP = false;
-    //protected ThreadNetworkSocket2 NetSystem = new ThreadNetworkSocket2();
     public bool IsListening;
     public bool IsServer;
     public bool IsClient;
@@ -432,33 +421,35 @@ public class GenericCore_Web : MonoBehaviour
     public static string SystemLog = "";
     public float MasterTimer = .05f;
     public int LocalConnectionID = -10;
-    int CycleTrigger = 3;
-    int cycleCounter = 0;
-    //Websocket stuff
+    public int CycleTrigger = 3;
+    int CycleCounter = 0;
     protected WebSocketServer wss;
     NativeWebSocket.WebSocket websocket;
 
-    
+
 
     // Start is called before the first frame update
     public void Start()
     {
         conCounter = 0;
         Connections = new ExclusiveDictionary<int, GenCore>();
-        /*if(IsServer)
+        if (IP == "")
         {
-            UI_StartServer();
+            IP = "127.0.0.1";
         }
-        if(IsClient)
+        if (PortNumber == 0)
         {
-            StartCoroutine(StartClient());
-        }*/
-
+            PortNumber = 9000;
+        }
+        if (CycleTrigger == 0)
+        {
+            CycleTrigger = 3;
+        }
     }
 
     public void ScreenConsole(String s)
     {
-        if(OutputConsole != null)
+        if (OutputConsole != null)
         {
             OutputConsole.text += s + "\n";
         }
@@ -468,82 +459,85 @@ public class GenericCore_Web : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        cycleCounter++;
-        if (IsConnected && cycleCounter % this.CycleTrigger==0 )
+        CycleCounter++;
+        if (IsConnected && CycleCounter % this.CycleTrigger == 0)
         {
-            if(this.cycleCounter == int.MaxValue)
+            if (this.CycleCounter == int.MaxValue)
             {
-                this.cycleCounter = 0;
+                this.CycleCounter = 0;
             }
-
+            //Get the message from the websocket thread to the unity side.
+            //Uses Consumer/Producer Queue.
+            foreach (KeyValuePair<int, GenCore> pair in Connections)
+            {
+                string temp = "";
+                while (pair.Value.msg.Count > 0)
+                {
+                    temp += pair.Value.msg.Consume();
+                }
+                TCPHandleMessage(pair.Value, temp);
+            }
+            //Did any connections close?
+            //Server Only
+            List<int> badC = new List<int>();
+            if (IsServer)
+            {
                 foreach (KeyValuePair<int, GenCore> pair in Connections)
                 {
-                    string temp = "";
-                    while (pair.Value.msg.Count > 0)
+                    if (pair.Value.Closing)
                     {
-                        temp += pair.Value.msg.Consume();
+                        badC.Add(pair.Key);
                     }
-                    TCPHandleMessage(pair.Value, temp);
-
                 }
-                List<int> badC = new List<int>();
+                foreach (int i in badC)
+                {
+                    Disconnect(i);
+                }
+            }
+            //Are you the client?  Are you closing?
+            if (IsClient && Connections.ContainsKey(0) && Connections[0].Closing)
+            {
+                Disconnect(0);
+            }
+            //Necessary for non-webgl to manage the websocket.
+            if (IsClient && !Connections[0].Closing)
+            {
+#if !UNITY_WEBGL || UNITY_EDITOR
+                Connections[0].clientWS.DispatchMessageQueue();
+#endif
+            }
+            //Every 100 udpates send heartbeat. 
+            if (CycleCounter % 100 == 0)
+            {
                 if (IsServer)
                 {
-                    
-                    foreach (KeyValuePair<int, GenCore> pair in Connections)
-                    {
-                        if (pair.Value.Closing)
-                        {
-                            badC.Add(pair.Key);
-                        }
-                    }
-                    foreach (int i in badC)
-                    {
-                        Disconnect(i);
-                    }
+                    wss.WebSocketServices.Broadcast("OK\n");
                 }
-                if (IsClient && Connections.ContainsKey(0) && Connections[0].Closing)
-                {
-                    Disconnect(0);
-                }
-                if (IsClient && !Connections[0].Closing)
-                {
-#if !UNITY_WEBGL || UNITY_EDITOR
-                    Connections[0].clientWS.DispatchMessageQueue();
-#endif
-                }
-                
-                ScreenConsole(cycleCounter.ToString());
-                if (cycleCounter % 100 == 0)
-                {
-
-                    if (IsServer)
-                    {
-                        wss.WebSocketServices.Broadcast("OK\n");
-                    }
-                }
-                OnSlowUpdate();
-                //yield return new WaitForSeconds(MasterTimer);
             }
+            //Call On Slow Update for Netcore and LobbyManager
+            OnSlowUpdate();
+        }
 
-        
+
     }
     private async void OnApplicationQuit()
     {
         if (IsClient && IsConnected)
-        {
+        {   //Close client
             await Connections[0].clientWS.Close();
         }
         if (IsServer)
         {
             try
             {
-                wss.Stop();
+                //Close server
+                DisconnectServer();
             }
             catch
             { }
         }
     }
+
 
 
     //UI functions
@@ -555,10 +549,10 @@ public class GenericCore_Web : MonoBehaviour
         }
         try
         {
+            //Server uses the websocket shart wss variable.
             IsServer = true;
             Debug.Log("Started server @" + "ws://" + IP + ":" + PortNumber);
             wss = new WebSocketServer("ws://"+IP+":"+PortNumber);
-            
             wss.Start();
             Debug.Log("Server Started!");
             IsServer = true;
@@ -576,6 +570,8 @@ public class GenericCore_Web : MonoBehaviour
     }
     public IEnumerator StartClient()
     {
+        //Client uses the native websocket client 
+        //Gencore has two different types of websockets init.
         Application.targetFrameRate = 60;
         if (!IsConnected)
         {
@@ -610,13 +606,13 @@ public class GenericCore_Web : MonoBehaviour
         }
     }
 
+    //Handles all of the functionality for Generic core recieving a message.
     public async void TCPHandleMessage(GenCore Con, String Data)
     {
         string temp = Data;
         char[] BadChars = { '<', '>' };
         temp = temp.Trim(BadChars);
         string[] commands = temp.Split('\n');
-
         foreach (string c in commands)
         {
             if (c.StartsWith("ID#"))
@@ -633,7 +629,7 @@ public class GenericCore_Web : MonoBehaviour
                     if (IsClient)
                     {
                         LocalConnectionID = Con.ConnectionID;
-                        Con.SendMsg(c);
+                        Con.SendMsg(c+"\n");
 
                     }
                 }
@@ -666,10 +662,10 @@ public class GenericCore_Web : MonoBehaviour
             }
             else
             {
+                //Pass it to netcore or lobby manager.
                 OnHandleMessages(c);
             }
         }
-    
     }
     public async void  Disconnect(int id)
     {
@@ -718,62 +714,7 @@ public class GenericCore_Web : MonoBehaviour
     private IEnumerator SlowUpdate()
     {
         yield return new WaitForSeconds(1f);
-        /*
-        int cycleCounter = 0;
-        while(IsConnected)
-        {
-            foreach (KeyValuePair<int, GenCore> pair in Connections)
-            {
-                string temp = "";
-                while (pair.Value.msg.Count>0)
-                {
-                    temp+=  pair.Value.msg.Consume();
-                }
-                TCPHandleMessage(pair.Value, temp);
-                
-            }
-                List<int> badC = new List<int>();
-            if(IsServer)
-            {
-           
-                foreach (KeyValuePair<int,GenCore> pair in Connections)
-                {
-                    if(pair.Value.Closing)
-                    {
-                        badC.Add(pair.Key);
-                    }
-                }
-                foreach (int i in badC)
-                {
-                    Disconnect(i);
-                }
-                
-            }
-            if(IsClient && Connections.ContainsKey(0) && Connections[0].Closing)
-            {
-                Disconnect(0);
-            }
-            if(IsClient && !Connections[0].Closing)
-            {
-#if !UNITY_WEBGL || UNITY_EDITOR
-             Connections[0].clientWS.DispatchMessageQueue();
-#endif
-            }
-            cycleCounter++;
-            ScreenConsole(cycleCounter.ToString());
-            if(cycleCounter%100==0)
-            {
-   
-                if (IsServer)
-                {
-                    wss.WebSocketServices.Broadcast("OK\n");
-                }               
-            }
-            OnSlowUpdate();
-            yield return new WaitForSeconds(MasterTimer);
-        }
-*/
-
+        //Slow update no longer used.
     }
     public IEnumerator DisconnectServer()
     {
@@ -784,15 +725,16 @@ public class GenericCore_Web : MonoBehaviour
             Disconnect(pair.Key);
         }
         yield return new WaitForSeconds(1);
-        if(IsServer && IsConnected)
+        if (IsServer && IsConnected)
         {
             wss.Stop();
-            IsServer = false;
-            IsConnected = false;
-
         }
+        IsServer = false;
+        IsConnected = false;
         OnServerDisconnectCleanup();
     }
+
+
     //UI FUNCTIONS
     /// <summary>
     /// UI call back-  Needs to be dynamic string from input field
@@ -851,7 +793,7 @@ public class GenericCore_Web : MonoBehaviour
         }
         else if(IsServer)
         {
-            DisconnectServer();
+            StartCoroutine(DisconnectServer());
         }
     }
 

@@ -72,10 +72,10 @@ public class NetworkCore     : GenericCore_Web
     /// <returns></returns>
     public override IEnumerator OnClientConnect(int id)
     {
-//        Debug.Log("???");
+        //Debug.Log("???");
         if (IsServer)
         {
-//            Debug.Log("S4");
+            //Debug.Log("S4");
            
             yield return new WaitForSeconds(.15f);
             foreach (KeyValuePair<int, NetworkID> entry in NetObjs)
@@ -94,7 +94,7 @@ public class NetworkCore     : GenericCore_Web
             //Debug.Log("S5");
             yield return new WaitForSeconds(.1f);
             NetCreateObject(-1, id);
-        //    Debug.Log("S6");
+            //Debug.Log("S6");
         }
         if(IsClient)
         {
