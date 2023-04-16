@@ -15,6 +15,8 @@ public class mouseInteractionScript : NetworkComponent
     private bool attackingObject = false;
     private bool DebugLog = false;
     private GameObject buildingTarget;
+    private bool alternateSpace = false;
+    private float unitSpacing = .25f;
     
     public Vector2 ParseV2(string v)
     {
@@ -115,7 +117,19 @@ public class mouseInteractionScript : NetworkComponent
                         if((obj != null)&&(obj.GetComponent<vanillaCharacterScript>() != null))
                         {
                             vanillaCharacterScript vCS = obj.GetComponent<vanillaCharacterScript>();
-                            vCS.UnitMove(worldPos2D);
+                            if(unitSpacing == .25f)
+                            {
+                                vCS.UnitMove(worldPos2D);
+                            }
+                            else
+                            {
+                                vCS.UnitMove(new Vector2 (worldPos2D.x, worldPos2D.y+unitSpacing));
+                            }
+                            if(unitSpacing > 0)
+                            {
+                                unitSpacing += .25f;
+                            }
+                            unitSpacing *= -1f;
                         }
                         else
                         {
@@ -126,6 +140,7 @@ public class mouseInteractionScript : NetworkComponent
                     {
                         Debug.Log("Nothing to do.");
                     }
+                    unitSpacing = .25f;
                     movingObject = false;
                 }
                 if(attackingObject)
@@ -272,6 +287,30 @@ public class mouseInteractionScript : NetworkComponent
                         gameObject.GetComponent<buildingScript>().TurnUIOnVanilla();
                         buildingTarget = selectedObject;
                     }
+                    else if(selectedObject.GetComponent<archerBuildScript>() != null)
+                    {
+                        gameObject.GetComponent<buildingScript>().TurnUIOnArcher();
+                        gameObject.GetComponent<buildingScript>().TurnUIOnArcherCreate();
+                        buildingTarget = selectedObject;
+                    }
+                    else if(selectedObject.GetComponent<horseBuildScript>() != null)
+                    {
+                        gameObject.GetComponent<buildingScript>().TurnUIOnHorse();
+                        gameObject.GetComponent<buildingScript>().TurnUIOnHorseCreate();
+                        buildingTarget = selectedObject;
+                    }
+                    else if(selectedObject.GetComponent<swordsManBuildScript>() != null)
+                    {
+                        gameObject.GetComponent<buildingScript>().TurnUIOnSwordsman();
+                        gameObject.GetComponent<buildingScript>().TurnUIOnSwordsmanCreate();
+                        buildingTarget = selectedObject;
+                    }
+                    else if(selectedObject.GetComponent<villagerBuildScript>() != null)
+                    {
+                        gameObject.GetComponent<buildingScript>().TurnUIOnVillager();
+                        gameObject.GetComponent<buildingScript>().TurnUIOnVillagerCreate();
+                        buildingTarget = selectedObject;
+                    }
                     else
                     {
                         Debug.Log("No script attached");
@@ -313,6 +352,22 @@ public class mouseInteractionScript : NetworkComponent
         if(buildingTarget.GetComponent<vanillaBuildingScript>() != null)
         {
             buildingTarget.GetComponent<vanillaBuildingScript>().SpawnVanilla();
+        }
+        if(buildingTarget.GetComponent<archerBuildScript>() != null)
+        {
+            buildingTarget.GetComponent<archerBuildScript>().SpawnArcher();
+        }
+        if(buildingTarget.GetComponent<horseBuildScript>() != null)
+        {
+            buildingTarget.GetComponent<horseBuildScript>().SpawnHorse();
+        }
+        if(buildingTarget.GetComponent<swordsManBuildScript>() != null)
+        {
+            buildingTarget.GetComponent<swordsManBuildScript>().SpawnSwordsman();
+        }
+        if(buildingTarget.GetComponent<villagerBuildScript>() != null)
+        {
+            buildingTarget.GetComponent<villagerBuildScript>().SpawnVillager();
         }
     }
 

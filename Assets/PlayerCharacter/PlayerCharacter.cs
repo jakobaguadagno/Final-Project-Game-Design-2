@@ -18,7 +18,20 @@ public class PlayerCharacter : NetworkComponent
     public int playerWood = 100;
     public int playerIron = 100;
     public int playerGold = 100;
+    public Color teamColor = new Color(1,1,1,1);
     public bool isAlive = true;
+    private bool clientUnitColorSet = false;
+
+    public Color ParseCV4(string v)
+    {
+        Color temp = new Color();
+        string[] args = v.Trim('(').Trim(')').Split(',');
+        temp.r = float.Parse(args[0]); 
+        temp.g = float.Parse(args[1]);
+        temp.b = float.Parse(args[2]);
+        temp.a = float.Parse(args[3]);
+        return temp;
+    }
 
     public override void HandleMessage(string flag, string value)
     {
@@ -43,6 +56,14 @@ public class PlayerCharacter : NetworkComponent
             if(IsServer)
             {
                 SendUpdate("HEALTH", value);
+            }
+        }
+        if(flag == "TEAMCOLOR")
+        {
+            teamColor = ParseCV4(value);
+            if(IsClient)
+            {
+                clientUnitColorSet = true;
             }
         }
         if(flag == "WOOD")
@@ -76,7 +97,7 @@ public class PlayerCharacter : NetworkComponent
 
     public override void NetworkedStart()
     {
-    
+        
     }
 
     public override IEnumerator SlowUpdate()
@@ -102,6 +123,7 @@ public class PlayerCharacter : NetworkComponent
                     SendUpdate("NAME", playerName);
                     SendUpdate("SCORE", playerScore.ToString());
                     SendUpdate("HEALTH", playerHealth.ToString());
+                    SendUpdate("TEAMCOLOR", teamColor.r.ToString() + ", " + teamColor.g.ToString() + ", " + teamColor.b.ToString() + ", " + teamColor.a.ToString());
                     IsDirty = false;
                 }
             }
@@ -174,6 +196,25 @@ public class PlayerCharacter : NetworkComponent
                 playerWood -= amountWood;
                 SendUpdate("WOOD", playerWood.ToString());
             }
-        }   
+        }
+    }
+
+    void Update()
+    {
+            if(IsClient)
+            {
+                if(clientUnitColorSet)
+                {
+                    Debug.Log("Color Loop");
+                    SpriteRenderer temp = gameObject.GetComponent<SpriteRenderer>();
+                    if(temp!=null)
+                    {
+                        temp.color = teamColor;
+                        Debug.Log("Unit Color: " + teamColor);
+                        Debug.Log("Sprite Color: " + temp);
+                        clientUnitColorSet = false;
+                    }
+                }
+            }
     }
 }

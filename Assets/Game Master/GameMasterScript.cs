@@ -101,6 +101,7 @@ public class GameMasterScript : NetworkComponent
                         temp = MyCore.NetCreateObject(player.character, player.Owner, GameObject.Find("Spawn 1").transform.position);
                         pc = temp.GetComponent<PlayerCharacter>();
                         pc.playerName = player.playerName;
+                        pc.teamColor = new Color(1,0,0,1);
                         MyCore.NetCreateObject(5, 0, GameObject.Find("Test").transform.position);
                         MyCore.NetCreateObject(5, 0, GameObject.Find("Test 2").transform.position);
                         //pc.ColorSelected = player.colorSelect;
@@ -111,6 +112,7 @@ public class GameMasterScript : NetworkComponent
                         temp = MyCore.NetCreateObject(player.character, player.Owner, GameObject.Find("Spawn 2").transform.position);
                         pc = temp.GetComponent<PlayerCharacter>();
                         pc.playerName = player.playerName;
+                        pc.teamColor = new Color(0,1,0,1);
                         Debug.Log("Player: " + (1+player.Owner));
                         Debug.Log(pc.playerName);
                         break;
@@ -118,6 +120,7 @@ public class GameMasterScript : NetworkComponent
                         temp = MyCore.NetCreateObject(player.character, player.Owner, GameObject.Find("Spawn 3").transform.position);
                         pc = temp.GetComponent<PlayerCharacter>();
                         pc.playerName = player.playerName;
+                        pc.teamColor = new Color(0,0,1,1);
                         Debug.Log("Player: " + (1+player.Owner));
                         Debug.Log(pc.playerName);
                         break;
@@ -125,6 +128,7 @@ public class GameMasterScript : NetworkComponent
                         temp = MyCore.NetCreateObject(player.character, player.Owner, GameObject.Find("Spawn 4").transform.position);
                         pc = temp.GetComponent<PlayerCharacter>();
                         pc.playerName = player.playerName;
+                        pc.teamColor = new Color(1,1,0,1);
                         Debug.Log("Player: " + (1+player.Owner));
                         Debug.Log(pc.playerName);
                         break;

@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 374208724947658722}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 61.175644, y: 48.058228, z: -20.960695}
+  m_LocalPosition: {x: 61.175644, y: 48.058228, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0, g: 1, b: 0.027567387, a: 1}
   m_FlipX: 0
@@ -129,8 +129,13 @@ MonoBehaviour:
   attackCooldownTime: 2
   mineCooldownTime: 1
   unitSpeed: 10
+  isArcher: 0
   canMine: 1
   attackRange: 1
+  arrowPrefab: {fileID: 4691803675111085333, guid: 02ace3c8aee515e4cb83b399942b62d3, type: 3}
+  clientShootArrow: 0
+  clientShootArrowPOS: {x: 0, y: 0}
+  MyAnime: {fileID: 0}
 --- !u!114 &326665985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +199,7 @@ MonoBehaviour:
   IsDirty: 0
   isAlive: 1
   UnitHealth: {fileID: 2747178385892861347}
+  MyAnime: {fileID: 0}
 --- !u!1 &2408026967804203487
 GameObject:
   m_ObjectHideFlags: 0

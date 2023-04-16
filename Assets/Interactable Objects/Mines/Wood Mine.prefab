@@ -60,16 +60,24 @@ PrefabInstance:
       value: Wood
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a1bfa2c3c0e8c6542b7fbdba4bb04fe5, type: 3}
+    - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.b
-      value: 0.21475615
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.g
-      value: 0.30213925
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.r
-      value: 0.3584906
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}

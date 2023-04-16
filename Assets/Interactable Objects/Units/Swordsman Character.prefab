@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5466801389493612201
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -1242877479670350376, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: canMine
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 374208724947658722, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Name
+      value: Swordsman Character
+      objectReference: {fileID: 0}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1796768522, guid: 6367c589bf9402f4daf6957122cc3b74, type: 3}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2693427994419188775, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: Type
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 61.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 41.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+--- !u!1 &5687076819761334603 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 374208724947658722, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+  m_PrefabInstance: {fileID: 5466801389493612201}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &-429192157358074732
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5687076819761334603}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d4bef3569e71a24bbc19d1039d9352b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

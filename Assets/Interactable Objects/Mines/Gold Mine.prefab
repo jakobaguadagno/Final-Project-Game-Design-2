@@ -64,12 +64,16 @@ PrefabInstance:
       value: Gold
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f7ce386a02fbd5d42b5f9ad6ada66467, type: 3}
+    - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.g
-      value: 0.9445122
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Color.r
