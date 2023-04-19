@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5317736223114700766, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: textToPut
+      value: Archer
+      objectReference: {fileID: 0}
     - target: {fileID: -1242877479670350376, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: canMine
       value: 0
@@ -22,6 +26,14 @@ PrefabInstance:
     - target: {fileID: 374208724947658722, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Name
       value: Archer Character
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Sprite
@@ -94,6 +106,10 @@ PrefabInstance:
     - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747269605238607019, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: textToPut
+      value: Archer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}

@@ -116,6 +116,7 @@ public class vanillaBuildingScript : NetworkComponent
                             {
                                 MyCore.NetCreateObject(spawnObject.GetComponent<NetworkID>().Type, gameObject.GetComponent<NetworkComponent>().Owner, spawnPoint.transform.position);
                                 pc.RemoveResources(woodCost, ironCost, goldCost);
+                                pc.AddScore(10);
                             }
                         }
                     }

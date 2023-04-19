@@ -51,6 +51,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5258765411951737312, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
+      propertyPath: textToPut
+      value: Iron Mine
+      objectReference: {fileID: 0}
     - target: {fileID: 6920978650495083291, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_Name
       value: Iron Mine
@@ -78,6 +82,10 @@ PrefabInstance:
     - target: {fileID: 7664807297544073547, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143721610729026719, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}
+      propertyPath: textToPut
+      value: Iron
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0de602b9d1ea5fc4e8bd9fea32ceb83b, type: 3}

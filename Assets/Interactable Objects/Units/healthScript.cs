@@ -12,16 +12,26 @@ public class healthScript : NetworkComponent
     public Slider UnitHealth;
     public Animator MyAnime;
     private bool clientDeath = false;
+    public AudioSource audioSource;
+    public AudioClip soundDying;
+    public AudioClip soundGrunt;
+    private float soundVolume = 0.5f;
+    public volumeScript userSound;
+    private bool unitSoundEnabled = false;
+    private bool setSound = false;
 
     public override void HandleMessage(string flag, string value)
     {
         if(flag == "UNITHEALTH")
         {
-            unitHealth = int.Parse(value);
             if(IsClient)
             {
-                Debug.Log("Unit Health Client: " + unitHealth);
+                if(unitHealth != int.Parse(value) && (int.Parse(value) >= 1))
+                {
+                    PlayUnitSound(soundGrunt);
+                }
             }
+            unitHealth = int.Parse(value);
             UnitHealth.value = unitHealth;
             if(IsServer)
             {
@@ -32,6 +42,7 @@ public class healthScript : NetworkComponent
         {
             if(IsClient)
             {
+                PlayUnitSound(soundDying);
                 clientDeath = true;
             }
         }
@@ -75,10 +86,32 @@ public class healthScript : NetworkComponent
     void Start()
     {
         MyAnime = GetComponent<Animator>();
+        if(IsClient)
+        {
+            if(gameObject.GetComponent<AudioSource>() != null)
+            {
+                audioSource = gameObject.GetComponent<AudioSource>();
+            }
+        }
+        userSound = GameObject.FindObjectOfType<volumeScript>();
     }
 
     public void Update()
     {
+        if(userSound == null)
+        {
+//            Debug.Log("Finding Sound");
+            userSound = GameObject.FindObjectOfType<volumeScript>();
+        }
+        if(userSound != null && !setSound)
+        {
+            soundVolume = userSound.volume/100;
+            setSound = true;
+        }
+        if(userSound != null && soundVolume != (userSound.volume/100))
+        {
+            soundVolume = userSound.volume/100;
+        }
         if(IsClient || IsServer)
         {
             if(MyAnime==null)
@@ -92,6 +125,16 @@ public class healthScript : NetworkComponent
             {
                 MyAnime.SetTrigger("death");
                 clientDeath=false;
+            }
+        }
+        if(IsClient)
+        {
+            if(audioSource == null)
+            {
+                if(gameObject.GetComponent<AudioSource>() != null)
+                {
+                    audioSource = gameObject.GetComponent<AudioSource>();
+                }
             }
         }
     }
@@ -115,6 +158,32 @@ public class healthScript : NetworkComponent
         yield break;
     }
    
+    private void OnBecameVisible()
+    {
+        if (audioSource != null && Camera.main != null)
+        {
+            unitSoundEnabled = true;
+        }
+    }
+
+    private void OnBecameInvisible()
+    {
+        if (audioSource != null && Camera.main != null)
+        {
+            unitSoundEnabled = false;
+        }
+    }
+
+    public void PlayUnitSound(AudioClip sound)
+    {
+        if(IsClient)
+        {
+            if(audioSource != null && Camera.main != null && unitSoundEnabled)
+            {
+                audioSource.PlayOneShot(sound, soundVolume);
+            }
+        }
+    }
 
     
 }

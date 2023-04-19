@@ -269,7 +269,7 @@ public class mouseInteractionScript : NetworkComponent
                     Debug.Log("Unit " + selectedObject.name + " does not belong to you.");
                 }
             }
-            if (hit.collider != null && hit.collider.gameObject.CompareTag("Building"))
+            if (hit.collider != null && (hit.collider.gameObject.CompareTag("Building") || hit.collider.gameObject.CompareTag("Player")))
             {
 
                 NetworkCore MyCore = GameObject.FindObjectOfType<NetworkCore>();
@@ -289,24 +289,28 @@ public class mouseInteractionScript : NetworkComponent
                     }
                     else if(selectedObject.GetComponent<archerBuildScript>() != null)
                     {
+                        gameObject.GetComponent<buildingScript>().TurnOffAllUICreate();
                         gameObject.GetComponent<buildingScript>().TurnUIOnArcher();
                         gameObject.GetComponent<buildingScript>().TurnUIOnArcherCreate();
                         buildingTarget = selectedObject;
                     }
                     else if(selectedObject.GetComponent<horseBuildScript>() != null)
                     {
+                        gameObject.GetComponent<buildingScript>().TurnOffAllUICreate();
                         gameObject.GetComponent<buildingScript>().TurnUIOnHorse();
                         gameObject.GetComponent<buildingScript>().TurnUIOnHorseCreate();
                         buildingTarget = selectedObject;
                     }
                     else if(selectedObject.GetComponent<swordsManBuildScript>() != null)
                     {
+                        gameObject.GetComponent<buildingScript>().TurnOffAllUICreate();
                         gameObject.GetComponent<buildingScript>().TurnUIOnSwordsman();
                         gameObject.GetComponent<buildingScript>().TurnUIOnSwordsmanCreate();
                         buildingTarget = selectedObject;
                     }
                     else if(selectedObject.GetComponent<villagerBuildScript>() != null)
                     {
+                        gameObject.GetComponent<buildingScript>().TurnOffAllUICreate();
                         gameObject.GetComponent<buildingScript>().TurnUIOnVillager();
                         gameObject.GetComponent<buildingScript>().TurnUIOnVillagerCreate();
                         buildingTarget = selectedObject;

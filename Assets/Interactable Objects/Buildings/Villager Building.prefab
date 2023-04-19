@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3279754735199318368, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: textToPut
+      value: Village
+      objectReference: {fileID: 0}
+    - target: {fileID: 291374457805733967, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: textToPut
+      value: Village
+      objectReference: {fileID: 0}
     - target: {fileID: 1393303547216772243, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
       propertyPath: m_Name
       value: Villager Building

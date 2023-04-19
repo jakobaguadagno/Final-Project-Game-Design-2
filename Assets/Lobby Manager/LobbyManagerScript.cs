@@ -76,7 +76,12 @@ public class LobbyManagerScript : NetworkComponent
     {
         if(IsLocalPlayer)
         {
-            SendCommand("NAME", n);
+            string myString = n;
+            if(myString.Length>=66)
+            {
+                myString.Substring(0, 65);
+            }
+            SendCommand("NAME", myString);
         }
 
     }

@@ -16,6 +16,9 @@ public class vanillaCharacterScript : NetworkComponent
     private bool unitAP = false;
     private bool unitMine = false;
     public bool isArcher = false;
+    public bool isHorse = false;
+    public bool isVillager = false;
+    public bool isSwordsman = false;
     public bool canMine = true;
     private bool isMining = false;
     private bool unitAttack = false;
@@ -26,6 +29,7 @@ public class vanillaCharacterScript : NetworkComponent
     private GameObject mineTarget;
     public GameObject arrowPrefab;
     private healthScript hsTarget;
+    private healthScript selfTarget;
     private Vector2 hsTargetLoc;
     public bool clientShootArrow = false;
     public Vector2 clientShootArrowPOS;
@@ -38,6 +42,17 @@ public class vanillaCharacterScript : NetworkComponent
     private bool serverSetTeam = false;
     private bool clientUnitColorSet = false;
     private Color unitColor = new Color(1,1,1,1);
+    private bool unitSoundEnabled = false;
+    public AudioSource audioSource;
+    public AudioClip soundSword;
+    public AudioClip soundHit;
+    public AudioClip soundArcher;
+    public AudioClip soundHorseAttack;
+    public AudioClip soundUnitMine;
+    private bool loopSet = false;
+    public float soundVolume = 0.5f;
+    public volumeScript userSound;
+    private bool setSound = false;
 
     public Vector2 ParseV2(string v)
     {
@@ -69,12 +84,28 @@ public class vanillaCharacterScript : NetworkComponent
         if(IsClient && flag == "SHOOTARROW")
         {
             Debug.Log(value);
+            PlayUnitSound(soundArcher);
             clientShootArrowPOS = ParseV2(value);
             clientShootArrow = true;
             clientAttack = true;
         }
         if((IsClient || IsServer) && flag == "ATTACK")
         {
+            if(IsClient)
+            {
+                if(isVillager)
+                {
+                    PlayUnitSound(soundHit);
+                }
+                if(isSwordsman)
+                {
+                    PlayUnitSound(soundSword);
+                }
+                if(isHorse)
+                {
+                    PlayUnitSound(soundHorseAttack);
+                }
+            }
             clientAttack = true;
         }
         if((IsClient || IsServer) && flag == "MOVING")
@@ -94,6 +125,10 @@ public class vanillaCharacterScript : NetworkComponent
         {
             unitColor = ParseCV4(value);
             clientUnitColorSet = true;
+        }
+        if(IsClient && flag == "MINESOUND")
+        {
+            PlayUnitSound(soundUnitMine);
         }
     }
 
@@ -128,6 +163,10 @@ public class vanillaCharacterScript : NetworkComponent
                     }
                 }
             }
+            if(gameObject.GetComponent<healthScript>() != null)
+            {
+                selfTarget = gameObject.GetComponent<healthScript>();
+            }
         }
         
     }
@@ -161,41 +200,19 @@ public class vanillaCharacterScript : NetworkComponent
                         }
                     }
                 }
-                if(unitMove)
+                if(selfTarget.isAlive)
                 {
-                    if(clientMiningBuilding)
+                    if(unitMove)
                     {
-                        SendUpdate("MININGBUILDING", false.ToString());
-                        clientMiningBuilding = false;
-                    } 
-                    float distanceFromGoal = Vector3.Distance(gameObject.transform.position, unitTargetLocation);
-                    SpriteFlipper(new Vector2 (unitTargetLocation.x, unitTargetLocation.y));
-                    bool setVar = false;
-                    while(distanceFromGoal >= .01f && !unitAP && !unitMine && !unitAttack)
-                    {
-                        if(!setVar)
+                        if(clientMiningBuilding)
                         {
-                            clientMoving = true;
-                            SendUpdate("MOVING", clientMoving.ToString());
-                            setVar = true;
-                        }
+                            SendUpdate("MININGBUILDING", false.ToString());
+                            clientMiningBuilding = false;
+                        } 
+                        float distanceFromGoal = Vector3.Distance(gameObject.transform.position, unitTargetLocation);
                         SpriteFlipper(new Vector2 (unitTargetLocation.x, unitTargetLocation.y));
-                        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, unitTargetLocation, unitSpeed*Time.deltaTime);
-                        distanceFromGoal = Vector3.Distance(gameObject.transform.position, unitTargetLocation);
-                        yield return new WaitForSeconds(.1f);
-                    }
-                    clientMoving = false;
-                    SendUpdate("MOVING", clientMoving.ToString());
-                    unitMove = false;
-                }
-                if(unitAP)
-                {
-                    if(enemyTarget != null)
-                    {
                         bool setVar = false;
-                        float distanceFromGoal = Vector3.Distance(gameObject.transform.position, enemyTarget.gameObject.transform.position);
-                        SpriteFlipper(new Vector2 (enemyTarget.gameObject.transform.position.x, enemyTarget.gameObject.transform.position.y));
-                        while(distanceFromGoal >= attackRange && !unitMove && !unitMine && !unitAttack && (enemyTarget != null))
+                        while(distanceFromGoal >= .01f && !unitAP && !unitMine && !unitAttack)
                         {
                             if(!setVar)
                             {
@@ -203,85 +220,56 @@ public class vanillaCharacterScript : NetworkComponent
                                 SendUpdate("MOVING", clientMoving.ToString());
                                 setVar = true;
                             }
-                            SpriteFlipper(new Vector2 (enemyTarget.gameObject.transform.position.x, enemyTarget.gameObject.transform.position.y));
-                            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, enemyTarget.gameObject.transform.position, unitSpeed*Time.deltaTime);
-                            distanceFromGoal = Vector3.Distance(gameObject.transform.position, enemyTarget.gameObject.transform.position);
+                            SpriteFlipper(new Vector2 (unitTargetLocation.x, unitTargetLocation.y));
+                            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, unitTargetLocation, unitSpeed*Time.deltaTime);
+                            distanceFromGoal = Vector3.Distance(gameObject.transform.position, unitTargetLocation);
                             yield return new WaitForSeconds(.1f);
                         }
                         clientMoving = false;
                         SendUpdate("MOVING", clientMoving.ToString());
-                        if(enemyTarget.isAlive)
+                        unitMove = false;
+                    }
+                    if(unitAP)
+                    {
+                        if(enemyTarget != null)
                         {
-                            UnitAttackPlayer(enemyTarget);
+                            bool setVar = false;
+                            float distanceFromGoal = Vector3.Distance(gameObject.transform.position, enemyTarget.gameObject.transform.position);
+                            SpriteFlipper(new Vector2 (enemyTarget.gameObject.transform.position.x, enemyTarget.gameObject.transform.position.y));
+                            while(distanceFromGoal >= attackRange && !unitMove && !unitMine && !unitAttack && (enemyTarget != null))
+                            {
+                                if(!setVar)
+                                {
+                                    clientMoving = true;
+                                    SendUpdate("MOVING", clientMoving.ToString());
+                                    setVar = true;
+                                }
+                                SpriteFlipper(new Vector2 (enemyTarget.gameObject.transform.position.x, enemyTarget.gameObject.transform.position.y));
+                                gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, enemyTarget.gameObject.transform.position, unitSpeed*Time.deltaTime);
+                                distanceFromGoal = Vector3.Distance(gameObject.transform.position, enemyTarget.gameObject.transform.position);
+                                yield return new WaitForSeconds(.1f);
+                            }
+                            clientMoving = false;
+                            SendUpdate("MOVING", clientMoving.ToString());
+                            if(enemyTarget.isAlive)
+                            {
+                                UnitAttackPlayer(enemyTarget);
+                            }
+                            else
+                            {
+                                unitAP = false;
+                            }
                         }
                         else
                         {
                             unitAP = false;
                         }
                     }
-                    else
+                    if(unitMine)
                     {
-                        unitAP = false;
-                    }
-                }
-                if(unitMine)
-                {
-                    float distanceFromGoal = Vector3.Distance(gameObject.transform.position, mineTarget.gameObject.transform.position);
-                    SpriteFlipper(new Vector2 (mineTarget.gameObject.transform.position.x, mineTarget.gameObject.transform.position.y));
-                    while(distanceFromGoal >= 1 && !unitMove && !unitAP && !unitAttack)
-                    {
-                        bool setVar = false;
-                        if(!setVar)
-                        {
-                            clientMoving = true;
-                            SendUpdate("MOVING", clientMoving.ToString());
-                            setVar = true;
-                        }
+                        float distanceFromGoal = Vector3.Distance(gameObject.transform.position, mineTarget.gameObject.transform.position);
                         SpriteFlipper(new Vector2 (mineTarget.gameObject.transform.position.x, mineTarget.gameObject.transform.position.y));
-                        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, mineTarget.gameObject.transform.position, unitSpeed*Time.deltaTime);
-                        distanceFromGoal = Vector3.Distance(gameObject.transform.position, mineTarget.gameObject.transform.position);
-                        yield return new WaitForSeconds(.1f);
-                    }
-                    clientMoving = false;
-                    SendUpdate("MOVING", clientMoving.ToString());
-                    if(distanceFromGoal < 1)
-                    {
-                        if(!clientMiningBuilding)
-                        {
-                            SendUpdate("MININGBUILDING", true.ToString());
-                            clientMiningBuilding = true;
-                        }    
-                        UnitMining(mineTarget);
-                    }
-                    else
-                    {
-                        if(clientMiningBuilding)
-                        {
-                            SendUpdate("MININGBUILDING", false.ToString());
-                            clientMiningBuilding = false;
-                        } 
-                        unitMine = false;
-                    }
-                }
-                else
-                {
-                    if(clientMiningBuilding)
-                    {
-                        SendUpdate("MININGBUILDING", false.ToString());
-                        clientMiningBuilding = false;
-                    } 
-                }
-                if(unitAttack && hsTarget.isAlive && (hsTarget.gameObject != null))
-                {
-                    if((hsTarget.gameObject != this.gameObject))
-                    {
-                        if(hsTarget.gameObject != null)
-                        {
-                            hsTargetLoc = hsTarget.transform.position;
-                        }
-                        float distanceFromGoal = Vector3.Distance(gameObject.transform.position, hsTargetLoc);
-                        SpriteFlipper(hsTargetLoc);
-                        while(distanceFromGoal >= attackRange && !unitMove && !unitMine && !unitAP && (hsTarget != null))
+                        while(distanceFromGoal >= 1 && !unitMove && !unitAP && !unitAttack)
                         {
                             bool setVar = false;
                             if(!setVar)
@@ -290,18 +278,81 @@ public class vanillaCharacterScript : NetworkComponent
                                 SendUpdate("MOVING", clientMoving.ToString());
                                 setVar = true;
                             }
-                            if(hsTarget.gameObject != null)
-                            {
-                                hsTargetLoc = hsTarget.transform.position;
-                            }
-                            SpriteFlipper(hsTargetLoc);
-                            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hsTargetLoc, unitSpeed*Time.deltaTime);
-                            distanceFromGoal = Vector3.Distance(gameObject.transform.position, hsTargetLoc);
+                            SpriteFlipper(new Vector2 (mineTarget.gameObject.transform.position.x, mineTarget.gameObject.transform.position.y));
+                            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, mineTarget.gameObject.transform.position, unitSpeed*Time.deltaTime);
+                            distanceFromGoal = Vector3.Distance(gameObject.transform.position, mineTarget.gameObject.transform.position);
                             yield return new WaitForSeconds(.1f);
                         }
                         clientMoving = false;
                         SendUpdate("MOVING", clientMoving.ToString());
-                        UnitAttackHSUnit(hsTarget);
+                        if(distanceFromGoal < 1)
+                        {
+                            if(!clientMiningBuilding)
+                            {
+                                SendUpdate("MININGBUILDING", true.ToString());
+                                clientMiningBuilding = true;
+                            }    
+                            UnitMining(mineTarget);
+                        }
+                        else
+                        {
+                            if(clientMiningBuilding)
+                            {
+                                SendUpdate("MININGBUILDING", false.ToString());
+                                clientMiningBuilding = false;
+                            } 
+                            unitMine = false;
+                        }
+                    }
+                    else
+                    {
+                        if(clientMiningBuilding)
+                        {
+                            SendUpdate("MININGBUILDING", false.ToString());
+                            clientMiningBuilding = false;
+                        } 
+                    }
+                    if(unitAttack && hsTarget.isAlive && (hsTarget.gameObject != null))
+                    {
+                        if((hsTarget.gameObject != this.gameObject))
+                        {
+                            if(hsTarget.gameObject != null)
+                            {
+                                hsTargetLoc = hsTarget.transform.position;
+                            }
+                            float distanceFromGoal = Vector3.Distance(gameObject.transform.position, hsTargetLoc);
+                            SpriteFlipper(hsTargetLoc);
+                            while(distanceFromGoal >= attackRange && !unitMove && !unitMine && !unitAP && (hsTarget != null))
+                            {
+                                bool setVar = false;
+                                if(!setVar)
+                                {
+                                    clientMoving = true;
+                                    SendUpdate("MOVING", clientMoving.ToString());
+                                    setVar = true;
+                                }
+                                if(hsTarget.gameObject != null)
+                                {
+                                    hsTargetLoc = hsTarget.transform.position;
+                                }
+                                SpriteFlipper(hsTargetLoc);
+                                gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hsTargetLoc, unitSpeed*Time.deltaTime);
+                                distanceFromGoal = Vector3.Distance(gameObject.transform.position, hsTargetLoc);
+                                yield return new WaitForSeconds(.1f);
+                            }
+                            clientMoving = false;
+                            SendUpdate("MOVING", clientMoving.ToString());
+                            UnitAttackHSUnit(hsTarget);
+                        }
+                        else
+                        {
+                            if(clientMoving)
+                            {
+                                clientMoving = false;
+                                SendUpdate("MOVING", clientMoving.ToString());
+                            }
+                            unitAttack = false;
+                        }
                     }
                     else
                     {
@@ -310,19 +361,10 @@ public class vanillaCharacterScript : NetworkComponent
                             clientMoving = false;
                             SendUpdate("MOVING", clientMoving.ToString());
                         }
-                        unitAttack = false;
-                    }
-                }
-                else
-                {
-                    if(clientMoving)
-                    {
-                        clientMoving = false;
-                        SendUpdate("MOVING", clientMoving.ToString());
-                    }
-                    if(unitAttack)
-                    {
-                        unitAttack = false;
+                        if(unitAttack)
+                        {
+                            unitAttack = false;
+                        }
                     }
                 }
                 if(IsDirty)
@@ -350,12 +392,35 @@ public class vanillaCharacterScript : NetworkComponent
                     temp.color = leader.teamColor;
                 }
             }
+            if(gameObject.GetComponent<AudioSource>() != null)
+            {
+                audioSource = gameObject.GetComponent<AudioSource>();
+            }
         }
+        userSound = GameObject.FindObjectOfType<volumeScript>();
         
     }
 
     void Update()
     {
+        if(userSound == null)
+        {
+//            Debug.Log("Finding Sound");
+            userSound = GameObject.FindObjectOfType<volumeScript>();
+        }
+        if(userSound != null && !setSound)
+        {
+            soundVolume = userSound.volume/100;
+            setSound = true;
+        }
+        if(userSound != null && soundVolume != (userSound.volume/100))
+        {
+            soundVolume = userSound.volume/100;
+        }
+        if(selfTarget == null && (gameObject != null))
+        {
+            selfTarget = gameObject.GetComponent<healthScript>();
+        }
         if(IsClient || IsServer)
         {
             if(MyAnime==null)
@@ -365,6 +430,13 @@ public class vanillaCharacterScript : NetworkComponent
         }
         if(IsClient)
         {
+            if(audioSource == null)
+            {
+                if(gameObject.GetComponent<AudioSource>() != null)
+                {
+                    audioSource = gameObject.GetComponent<AudioSource>();
+                }
+            }
             if(clientUnitColorSet)
             {
                 Debug.Log("Color Loop");
@@ -398,6 +470,7 @@ public class vanillaCharacterScript : NetworkComponent
                 GameObject instance = Instantiate(arrowPrefab, gameObject.transform);
                 instance.GetComponent<arrowScript>().targetPoint = new Vector3(clientShootArrowPOS.x, clientShootArrowPOS.y, -1);
                 instance.GetComponent<arrowScript>().startingPoint = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -1);
+                
                 clientShootArrow = false;
             }
             if(MyAnime != null)
@@ -453,12 +526,14 @@ public class vanillaCharacterScript : NetworkComponent
     {
         if(!attackCooldown && pc.isAlive && !isArcher)
         {
+            leader.AddScore(5);
             SendUpdate("ATTACK", true.ToString());
             StartCoroutine(UnitAttackRangedPlayer(.5f,pc));
             attackCooldown = true;
         }
         if(!attackCooldown && pc.isAlive && isArcher)
         {
+            leader.AddScore(5);
             Vector2 tar = new Vector2(enemyTarget.transform.position.x,enemyTarget.transform.position.y);
             SendUpdate("SHOOTARROW", tar.ToString("F2"));
             StartCoroutine(UnitAttackRangedPlayer(1.1f,pc));
@@ -528,6 +603,7 @@ public class vanillaCharacterScript : NetworkComponent
     {
         if(!mineCooldown && canMine)
         {
+            SendUpdate("MINESOUND",true.ToString());
             leader.MinedResource(mine.tag);
             mineCooldown = true;
         }
@@ -557,12 +633,14 @@ public class vanillaCharacterScript : NetworkComponent
     {
         if(!attackCooldown && hs.isAlive && !isArcher)
         {
+            leader.AddScore(5);
             SendUpdate("ATTACK", true.ToString());
             StartCoroutine(UnitAttackRangedUnit(.5f,hs));
             attackCooldown = true;
         }
         if(!attackCooldown && hs.isAlive && isArcher)
         {
+            leader.AddScore(5);
             SendUpdate("SHOOTARROW", hsTargetLoc.ToString("F2"));
             StartCoroutine(UnitAttackRangedUnit(1.1f,hs));
             attackCooldown = true;
@@ -616,5 +694,38 @@ public class vanillaCharacterScript : NetworkComponent
             }
         }
     }
+    
+    //Sound Scripting
 
+    private void OnBecameVisible()
+    {
+        if (audioSource != null && Camera.main != null)
+        {
+            unitSoundEnabled = true;
+        }
+    }
+
+    private void OnBecameInvisible()
+    {
+        if (audioSource != null && Camera.main != null)
+        {
+            unitSoundEnabled = false;
+        }
+    }
+
+    public void PlayUnitSound(AudioClip sound)
+    {
+        if(IsClient)
+        {
+            if(audioSource != null && Camera.main != null && unitSoundEnabled)
+            {
+                audioSource.PlayOneShot(sound, soundVolume);
+            }
+        }
+    }
+
+    
+
+
+    //EOS Sound Scripting
 }

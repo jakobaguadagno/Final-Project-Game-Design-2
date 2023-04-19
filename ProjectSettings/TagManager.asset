@@ -10,6 +10,17 @@ TagManager:
   - Wood
   - Iron
   - Building
+  - Endgame
+  - Player1Score
+  - Player2Score
+  - Player3Score
+  - Player4Score
+  - Sound
+  - VolumeSlider
+  - BuildZone1
+  - BuildZone2
+  - BuildZone3
+  - BuildZone4
   layers:
   - Default
   - TransparentFX

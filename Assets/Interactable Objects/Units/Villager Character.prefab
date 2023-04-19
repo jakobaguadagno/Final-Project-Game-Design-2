@@ -7,13 +7,29 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5317736223114700766, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: textToPut
+      value: Villager
+      objectReference: {fileID: 0}
     - target: {fileID: -1242877479670350376, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: canMine
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1242877479670350376, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: isVillager
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 374208724947658722, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Name
       value: Villager Character
+      objectReference: {fileID: 0}
+    - target: {fileID: 974470336989705023, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Sprite
@@ -46,6 +62,10 @@ PrefabInstance:
     - target: {fileID: 2693427994419188775, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: Type
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4889192084497162222, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: textToPut
+      value: Villager
       objectReference: {fileID: 0}
     - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_RootOrder
@@ -91,7 +111,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7747269605238607019, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: textToPut
+      value: Villager
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 5607863397378786569, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
 --- !u!1 &3453221813609229878 stripped
 GameObject:

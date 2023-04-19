@@ -21,6 +21,7 @@ public class PlayerCharacter : NetworkComponent
     public Color teamColor = new Color(1,1,1,1);
     public bool isAlive = true;
     private bool clientUnitColorSet = false;
+    public Transform disconnectUI;
 
     public Color ParseCV4(string v)
     {
@@ -42,8 +43,33 @@ public class PlayerCharacter : NetworkComponent
         }
         if(flag == "SCORE")
         {
-            playerScore = int.Parse(value);
-            PlayerScore.text = playerScore.ToString();
+            
+            if(IsServer)
+            {
+                GameMasterScript tempGMS = FindObjectOfType<GameMasterScript>();
+                switch(gameObject.GetComponent<NetworkID>().Owner)
+                {
+                    case 0:
+                        tempGMS.playerScores[0] = playerScore;
+                        break;
+                    case 1:
+                        tempGMS.playerScores[1] = playerScore;
+                        break;
+                    case 2:
+                        tempGMS.playerScores[2] = playerScore;
+                        break;
+                    case 3:
+                        tempGMS.playerScores[3] = playerScore;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(IsClient)
+            {
+                playerScore = int.Parse(value);
+                PlayerScore.text = playerScore.ToString();
+            }
         }
         if(flag == "HEALTH")
         {
@@ -69,7 +95,7 @@ public class PlayerCharacter : NetworkComponent
         if(flag == "WOOD")
         {
             playerWood = int.Parse(value);
-            PlayerWood.text = "Player Wood: " + playerWood.ToString();
+            PlayerWood.text = "Wood: " + playerWood.ToString();
             if(IsServer)
             {
                 SendUpdate("WOOD", value);
@@ -78,7 +104,7 @@ public class PlayerCharacter : NetworkComponent
         if(flag == "IRON")
         {
             playerIron = int.Parse(value);
-            PlayerIron.text = "Player Iron: " + playerIron.ToString();
+            PlayerIron.text = "Iron: " + playerIron.ToString();
             if(IsServer)
             {
                 SendUpdate("IRON", value);
@@ -87,7 +113,7 @@ public class PlayerCharacter : NetworkComponent
         if(flag == "GOLD")
         {
             playerGold = int.Parse(value);
-            PlayerGold.text = "Player Gold: " + playerGold.ToString();
+            PlayerGold.text = "Gold: " + playerGold.ToString();
             if(IsServer)
             {
                 SendUpdate("GOLD", value);
@@ -114,6 +140,31 @@ public class PlayerCharacter : NetworkComponent
                     {
                         if(gameObject.GetComponent<NetworkID>().Owner == obj.Owner)
                         {
+                            if(gameObject.GetComponent<PlayerCharacter>()!=null)
+                            {
+                                GameMasterScript tempGMS = FindObjectOfType<GameMasterScript>();
+                                switch(gameObject.GetComponent<NetworkID>().Owner)
+                                {
+                                    case 0:
+                                        tempGMS.playerScores[0] = playerScore;
+                                        tempGMS.playerAlive[0] = false;
+                                        break;
+                                    case 1:
+                                        tempGMS.playerScores[1] = playerScore;
+                                        tempGMS.playerAlive[1] = false;
+                                        break;
+                                    case 2:
+                                        tempGMS.playerScores[2] = playerScore;
+                                        tempGMS.playerAlive[2] = false;
+                                        break;
+                                    case 3:
+                                        tempGMS.playerScores[3] = playerScore;
+                                        tempGMS.playerAlive[3] = false;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
                             MyCore.NetDestroyObject(obj.NetId);
                         }
                     }
@@ -130,13 +181,7 @@ public class PlayerCharacter : NetworkComponent
             yield return new WaitForSeconds(.1f);
         }
     }
-    public void EnableCanvasES()
-    {
-        if(IsLocalPlayer)
-        {
-            this.transform.GetChild(1).gameObject.SetActive(true);
-        }
-    }
+    
 
     public void EnableCanvasIG()
     {
@@ -161,18 +206,24 @@ public class PlayerCharacter : NetworkComponent
         {
             if(mine == "Gold")
             {
-                playerGold += 10;
+                playerGold += 3;
+                playerScore += 5;
                 SendUpdate("GOLD", playerGold.ToString());
+                SendUpdate("SCORE", playerScore.ToString());
             }
             if(mine == "Iron")
             {
-                playerIron += 10;
+                playerIron += 5;
+                playerScore += 3;
                 SendUpdate("IRON", playerIron.ToString());
+                SendUpdate("SCORE", playerScore.ToString());
             }
             if(mine == "Wood")
             {
                 playerWood += 10;
+                playerScore += 1;
                 SendUpdate("WOOD", playerWood.ToString());
+                SendUpdate("SCORE", playerScore.ToString());
             }
         }   
     }
@@ -199,6 +250,15 @@ public class PlayerCharacter : NetworkComponent
         }
     }
 
+    public void AddScore(int amount)
+    {
+        if(IsServer)
+        {
+            playerScore += amount;
+            SendUpdate("SCORE", playerScore.ToString());
+        }
+    }
+
     void Update()
     {
             if(IsClient)
@@ -217,4 +277,6 @@ public class PlayerCharacter : NetworkComponent
                 }
             }
     }
+
+    
 }

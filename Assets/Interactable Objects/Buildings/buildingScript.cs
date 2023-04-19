@@ -189,6 +189,7 @@ public class buildingScript : NetworkComponent
             Debug.Log("Create");
             MyCore.NetCreateObject(type, owner, position);
             pc.RemoveResources(woodCost, ironCost, goldCost);
+            pc.AddScore(50);
         }
     }
 
@@ -223,7 +224,7 @@ public class buildingScript : NetworkComponent
             }
     }
 
-    private void TurnOffAllUI()
+    public void TurnOffAllUI()
     {
         if(buildBoxOutLine.gameObject != null)
         {
@@ -233,6 +234,11 @@ public class buildingScript : NetworkComponent
         TurnUIOffHorse();
         TurnUIOffArcher();
         TurnUIOffVillager();
+        TurnOffAllUICreate();
+    }
+
+    public void TurnOffAllUICreate()
+    {
         TurnUIOffSwordsmanCreate();
         TurnUIOffHorseCreate();
         TurnUIOffArcherCreate();
@@ -260,7 +266,6 @@ public class buildingScript : NetworkComponent
         buildingEnabled = false;
         buildingEnabled = true;
         TurnOffAllUI();
-        TurnUIOnVillager();
         typeToCreate = 9;
     }
 
@@ -269,7 +274,6 @@ public class buildingScript : NetworkComponent
         buildingEnabled = false;
         buildingEnabled = true;
         TurnOffAllUI();
-        TurnUIOnArcher();
         typeToCreate = 11;
     }
 
@@ -278,7 +282,6 @@ public class buildingScript : NetworkComponent
         buildingEnabled = false;
         buildingEnabled = true;
         TurnOffAllUI();
-        TurnUIOnHorse();
         typeToCreate = 12;
     }
 
@@ -287,7 +290,6 @@ public class buildingScript : NetworkComponent
         buildingEnabled = false;
         buildingEnabled = true;
         TurnOffAllUI();
-        TurnUIOnSwordsman();
         typeToCreate = 10;
     }
     
