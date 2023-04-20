@@ -56,7 +56,7 @@ public class cameraControlScript : MonoBehaviour
                     }
                     if(core.IsClient)
                     {
-                        Debug.Log("Client");
+//                        Debug.Log("Client");
                         lbm = GameObject.FindObjectsOfType<LobbyManagerScript>();
                         foreach(LobbyManagerScript l in lbm)
                         {
@@ -72,13 +72,13 @@ public class cameraControlScript : MonoBehaviour
                                             
                                             break;
                                         case 1:
-                                            transform.position = new Vector3(GameObject.Find("Spawn 2").transform.position.x,GameObject.Find("Spawn 1").transform.position.y,-5);
+                                            transform.position = new Vector3(GameObject.Find("Spawn 2").transform.position.x,GameObject.Find("Spawn 2").transform.position.y,-5);
                                             break;
                                         case 2:
-                                            transform.position = new Vector3(GameObject.Find("Spawn 3").transform.position.x,GameObject.Find("Spawn 1").transform.position.y,-5);
+                                            transform.position = new Vector3(GameObject.Find("Spawn 3").transform.position.x,GameObject.Find("Spawn 3").transform.position.y,-5);
                                             break;
                                         case 3:
-                                            transform.position = new Vector3(GameObject.Find("Spawn 4").transform.position.x,GameObject.Find("Spawn 1").transform.position.y,-5);
+                                            transform.position = new Vector3(GameObject.Find("Spawn 4").transform.position.x,GameObject.Find("Spawn 4").transform.position.y,-5);
                                             break;
                                         default:
                                             break;

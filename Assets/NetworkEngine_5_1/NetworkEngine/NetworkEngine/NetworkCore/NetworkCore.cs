@@ -72,10 +72,10 @@ public class NetworkCore     : GenericCore_Web
     /// <returns></returns>
     public override IEnumerator OnClientConnect(int id)
     {
-        //Debug.Log("???");
+ //       Debug.Log("???");
         if (IsServer)
         {
-            //Debug.Log("S4");
+ //           Debug.Log("S4");
            
             yield return new WaitForSeconds(.15f);
             foreach (KeyValuePair<int, NetworkID> entry in NetObjs)
@@ -91,10 +91,10 @@ public class NetworkCore     : GenericCore_Web
                 //Connections[ConCounter - 1].Send(Encoding.ASCII.GetBytes(MSG));
                 Send(MSG, id);
             }
-            //Debug.Log("S5");
+//            Debug.Log("S5");
             yield return new WaitForSeconds(.1f);
             NetCreateObject(-1, id);
-            //Debug.Log("S6");
+//            Debug.Log("S6");
         }
         if(IsClient)
         {
@@ -150,19 +150,18 @@ public class NetworkCore     : GenericCore_Web
             MasterMessage.Append(id.Value.GameObjectMessages.ToString() + "\n");
             //UDPMasterStringList.Add(id.Value.UDPGameObjectMessages.ReadAndClear() + "\n");
         }
-        //Send Master Message
-        List<int> bad = new List<int>();
+ 
 
         string msgToSend = MasterMessage.ReadAndClear();
-        if(IsServer)
+        /*if(IsServer)
         {
             wss.WebSocketServices.Broadcast(msgToSend);
         }
         if(IsClient)
         {
             Send(msgToSend,0);
-        }
-        /*foreach (KeyValuePair<int, GenCore> item in Connections)
+        }*/
+        foreach (KeyValuePair<int, GenCore> item in Connections)
         {
             try
             {
@@ -176,16 +175,8 @@ public class NetworkCore     : GenericCore_Web
             catch (System.Exception e)
             {
                 Debug.Log("Exception occured in slow update: " + e.ToString());
-                bad.Add(item.Key);
             }
-        }*/
-        //MasterMessage.SetData("");//delete old values.
-        foreach (int i in bad)
-        {
-            Debug.Log("We are disconecting Connection " + i.ToString()+" from "+name+":"+this.GetType().ToString());
-            this.Disconnect(i);
         }
-        
     }
     /// <summary>
     /// This function get's called from TCP and UDP receive functions.

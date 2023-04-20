@@ -59,7 +59,7 @@ public class buildingScript : NetworkComponent
             worldPos2D = ParseV2(value);
             buildingOwner = ParseOAV2(value);
             typeToCreate = ParseTAOAV2(value);
-            Debug.Log("Server Build Information: " + "\nWorld Position: " + worldPos2D + "\nBuilding Owner: " + buildingOwner + "\nBuilding Type: " + typeToCreate);
+//            Debug.Log("Server Build Information: " + "\nWorld Position: " + worldPos2D + "\nBuilding Owner: " + buildingOwner + "\nBuilding Type: " + typeToCreate);
             buildServer = true;
         }
     }
@@ -84,6 +84,30 @@ public class buildingScript : NetworkComponent
                 {
                     if(typeToCreate != -2)
                     {
+                        if(typeToCreate==9)
+                        {
+                            woodCost = 50;
+                            ironCost = 30;
+                            goldCost = 0;
+                        }
+                        if(typeToCreate==10)
+                        {
+                            woodCost = 40;
+                            ironCost = 10;
+                            goldCost = 20;
+                        }
+                        if(typeToCreate==11)
+                        {
+                            woodCost = 0;
+                            ironCost = 30;
+                            goldCost = 20;
+                        }
+                        if(typeToCreate==12)
+                        {
+                            woodCost = 20;
+                            ironCost = 20;
+                            goldCost = 20;
+                        }
                         PlayerCharacter[] allP = FindObjectsOfType<PlayerCharacter>();
                         foreach(PlayerCharacter pc in allP)
                         {
@@ -184,12 +208,47 @@ public class buildingScript : NetworkComponent
             Debug.Log("Cannot place over object.");
             canCreate = false;
         }
+        if(owner == 0)
+        {
+            if(position.x>70 || position.x<0 || position.y<83 || position.y>154)
+            {
+                canCreate = false;
+            }
+        }
+        if(owner == 1)
+        {
+            if(position.x>150 || position.x<80 || position.y<83 || position.y>154)
+            {
+                canCreate = false;
+            }
+        }
+        if(owner == 2)
+        {
+            if(position.x>70 || position.x<0 || position.y<4 || position.y>75)
+            {
+                canCreate = false;
+            }
+        }
+        if(owner == 3)
+        {
+            if(position.x>150 || position.x<80 || position.y<4 || position.y>75)
+            {
+                canCreate = false;
+            }
+        }
         if (canCreate)
         {
-            Debug.Log("Create");
+//            Debug.Log("Create");
             MyCore.NetCreateObject(type, owner, position);
             pc.RemoveResources(woodCost, ironCost, goldCost);
-            pc.AddScore(50);
+            if(type == 9)
+            {
+                pc.AddScore(20);
+            }
+            else
+            {
+                pc.AddScore(50);
+            }
         }
     }
 

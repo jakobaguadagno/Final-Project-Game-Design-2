@@ -28,6 +28,7 @@ public class vanillaCharacterScript : NetworkComponent
     private PlayerCharacter leader = null;
     private GameObject mineTarget;
     public GameObject arrowPrefab;
+    public GameObject selectedUI;
     private healthScript hsTarget;
     private healthScript selfTarget;
     private Vector2 hsTargetLoc;
@@ -50,9 +51,10 @@ public class vanillaCharacterScript : NetworkComponent
     public AudioClip soundHorseAttack;
     public AudioClip soundUnitMine;
     private bool loopSet = false;
-    public float soundVolume = 0.5f;
+    public float soundVolume = 50f;
     public volumeScript userSound;
     private bool setSound = false;
+    private bool mineSoundCooldown = false;
 
     public Vector2 ParseV2(string v)
     {
@@ -67,15 +69,15 @@ public class vanillaCharacterScript : NetworkComponent
     {
         Color temp = new Color();
         string[] args = v.Trim('(').Trim(')').Split(',');
-        Debug.Log("ARGS: " + args[0] + " / " + args[1] + " / " + args[2] + " / " + args[3]);
+        //Debug.Log("ARGS: " + args[0] + " / " + args[1] + " / " + args[2] + " / " + args[3]);
         temp.r = float.Parse(args[0]);
-        Debug.Log("1: " + temp.r);
+        //Debug.Log("1: " + temp.r);
         temp.g = float.Parse(args[1]);
-        Debug.Log("2: " + temp.g);
+        //Debug.Log("2: " + temp.g);
         temp.b = float.Parse(args[2]);
-        Debug.Log("3: " + temp.b);
+        //Debug.Log("3: " + temp.b);
         temp.a = float.Parse(args[3]);
-        Debug.Log("4: " + temp.a);
+        //Debug.Log("4: " + temp.a);
         return temp;
     }
 
@@ -126,10 +128,6 @@ public class vanillaCharacterScript : NetworkComponent
             unitColor = ParseCV4(value);
             clientUnitColorSet = true;
         }
-        if(IsClient && flag == "MINESOUND")
-        {
-            PlayUnitSound(soundUnitMine);
-        }
     }
 
     public override void NetworkedStart()
@@ -168,7 +166,11 @@ public class vanillaCharacterScript : NetworkComponent
                 selfTarget = gameObject.GetComponent<healthScript>();
             }
         }
-        
+        if(IsClient)
+        {
+            IEnumerator unitMineSoundIE = UnitMineSoundCooldown(1f);
+            StartCoroutine(unitMineSoundIE);
+        }
     }
 
     public override IEnumerator SlowUpdate()
@@ -251,7 +253,7 @@ public class vanillaCharacterScript : NetworkComponent
                             }
                             clientMoving = false;
                             SendUpdate("MOVING", clientMoving.ToString());
-                            if(enemyTarget.isAlive)
+                            if(enemyTarget.isAlive && distanceFromGoal <= attackRange)
                             {
                                 UnitAttackPlayer(enemyTarget);
                             }
@@ -291,7 +293,7 @@ public class vanillaCharacterScript : NetworkComponent
                             {
                                 SendUpdate("MININGBUILDING", true.ToString());
                                 clientMiningBuilding = true;
-                            }    
+                            }
                             UnitMining(mineTarget);
                         }
                         else
@@ -444,8 +446,8 @@ public class vanillaCharacterScript : NetworkComponent
                 if(temp!=null)
                 {
                     temp.color = unitColor;
-                    Debug.Log("Unit Color: " + unitColor);
-                    Debug.Log("Sprite Color: " + temp);
+                    //Debug.Log("Unit Color: " + unitColor);
+                    //Debug.Log("Sprite Color: " + temp);
                     clientUnitColorSet = false;
                 }
             }
@@ -496,6 +498,10 @@ public class vanillaCharacterScript : NetworkComponent
                 {
                     MyAnime.SetBool("miningbuilding",false);
                 }
+                if(MyAnime.GetBool("miningbuilding"))
+                {
+                    UnitMineSound();
+                }
             }
         }
     }
@@ -512,9 +518,9 @@ public class vanillaCharacterScript : NetworkComponent
         unitAttack = false;
         unitMove = true;
 
-        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
-        Debug.Log("Moving From: " + gameObject.transform.position);
-        Debug.Log("Moving To: " + finish);
+//        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
+//        Debug.Log("Moving From: " + gameObject.transform.position);
+//        Debug.Log("Moving To: " + finish);
         
     }
 
@@ -551,9 +557,9 @@ public class vanillaCharacterScript : NetworkComponent
         unitAttack = false;
         unitAP = true;
 
-        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
-        Debug.Log("Moving From: " + gameObject.transform.position);
-        Debug.Log("Moving To: " + enemyTarget.gameObject.name);
+//        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
+//        Debug.Log("Moving From: " + gameObject.transform.position);
+//        Debug.Log("Moving To: " + enemyTarget.gameObject.name);
     }
 
     public IEnumerator UnitCooldown(float s)
@@ -594,16 +600,15 @@ public class vanillaCharacterScript : NetworkComponent
         unitAttack = false;
         unitMine = true;
 
-        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
-        Debug.Log("Moving From: " + gameObject.transform.position);
-        Debug.Log("Moving To: " +  gameObject.name);
+//        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
+//        Debug.Log("Moving From: " + gameObject.transform.position);
+//        Debug.Log("Moving To: " +  gameObject.name);
     }
 
     public void UnitMining(GameObject mine)
     {
         if(!mineCooldown && canMine)
         {
-            SendUpdate("MINESOUND",true.ToString());
             leader.MinedResource(mine.tag);
             mineCooldown = true;
         }
@@ -615,13 +620,37 @@ public class vanillaCharacterScript : NetworkComponent
         {
             if(mineCooldown)
             {
-                Debug.Log("Mine Cooldown");
+//               Debug.Log("Mine Cooldown");
                 yield return new WaitForSeconds(s);
                 mineCooldown = false;
             }
             yield return new WaitForSeconds(.1f);
         }
     }
+
+    public void UnitMineSound()
+    {
+        if(!mineSoundCooldown)
+        {
+            PlayUnitSound(soundUnitMine);
+            mineSoundCooldown = true;
+        }
+    }
+
+    public IEnumerator UnitMineSoundCooldown(float s)
+    {
+        while(true)
+        {
+            if(mineSoundCooldown)
+            {
+//                Debug.Log("Mine Cooldown");
+                yield return new WaitForSeconds(s);
+                mineSoundCooldown = false;
+            }
+            yield return new WaitForSeconds(.1f);
+        }
+    }
+
 
     //EOS Mining Script
 
@@ -668,9 +697,9 @@ public class vanillaCharacterScript : NetworkComponent
         unitAP = false;
         unitAttack = true;
 
-        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
-        Debug.Log("Moving From: " + gameObject.transform.position);
-        Debug.Log("Moving To: " + hsTarget.gameObject.name);
+//        Debug.Log("Moving Unit " + UnitNetID + ": " + gameObject.name);
+//        Debug.Log("Moving From: " + gameObject.transform.position);
+//        Debug.Log("Moving To: " + hsTarget.gameObject.name);
     }
 
     //EOS Unit Damage
@@ -728,4 +757,20 @@ public class vanillaCharacterScript : NetworkComponent
 
 
     //EOS Sound Scripting
+
+    public void TurnOnSelectedUI()
+    {
+        if(IsLocalPlayer)
+        {
+            selectedUI.SetActive(true);
+        }
+    }
+
+    public void TurnOffSelectedUI()
+    {
+        if(IsLocalPlayer)
+        {
+            selectedUI.SetActive(false);
+        }
+    }
 }

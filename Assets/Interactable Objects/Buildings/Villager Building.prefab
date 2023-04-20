@@ -15,6 +15,14 @@ PrefabInstance:
       propertyPath: textToPut
       value: Village
       objectReference: {fileID: 0}
+    - target: {fileID: 506532157640235939, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 506532157640235939, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: m_MaxValue
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1393303547216772243, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
       propertyPath: m_Name
       value: Villager Building
@@ -61,6 +69,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3006935439394556417, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963351149972641481, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963351149972641481, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7224230438881556081, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
@@ -112,3 +128,15 @@ MonoBehaviour:
   woodCost: 10
   ironCost: 0
   goldCost: 0
+  timeSlider: {fileID: 4292914776910668390}
+--- !u!114 &4292914776910668390 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 506532157640235939, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+  m_PrefabInstance: {fileID: 4365377198375074245}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

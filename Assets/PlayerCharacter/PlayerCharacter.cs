@@ -76,7 +76,7 @@ public class PlayerCharacter : NetworkComponent
             playerHealth = int.Parse(value);
             if(IsClient)
             {
-                Debug.Log("Player Health Client: " + playerHealth);
+//                Debug.Log("Player Health Client: " + playerHealth);
             }
             PlayerHealth.value = playerHealth;
             if(IsServer)
@@ -265,13 +265,13 @@ public class PlayerCharacter : NetworkComponent
             {
                 if(clientUnitColorSet)
                 {
-                    Debug.Log("Color Loop");
+//                    Debug.Log("Color Loop");
                     SpriteRenderer temp = gameObject.GetComponent<SpriteRenderer>();
                     if(temp!=null)
                     {
                         temp.color = teamColor;
-                        Debug.Log("Unit Color: " + teamColor);
-                        Debug.Log("Sprite Color: " + temp);
+//                        Debug.Log("Unit Color: " + teamColor);
+//                        Debug.Log("Sprite Color: " + temp);
                         clientUnitColorSet = false;
                     }
                 }

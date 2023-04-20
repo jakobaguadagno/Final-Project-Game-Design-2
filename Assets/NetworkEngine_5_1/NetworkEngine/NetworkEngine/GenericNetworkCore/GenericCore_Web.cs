@@ -301,36 +301,46 @@ public class GenCore : WebSocketBehavior
     public bool Closing;
     public NativeWebSocket.WebSocket clientWS;
     public ProducerConsumerQueue<string> msg = new ProducerConsumerQueue<string>();
+    public bool FailedToConnect = false;
 
     public async void StartClient()
     {
-            owner.IsServer = false;
-        owner.IsClient = true;
+            FailedToConnect = false;
+            //owner.IsServer = false;
+            //owner.IsClient = true;
             owner.ScreenConsole("ws://" + owner.IP + ":" + owner.PortNumber + "/");
             clientWS = new NativeWebSocket.WebSocket("ws://"+owner.IP+":"+owner.PortNumber+"/");
+            
 
             clientWS.OnOpen += () =>
             {
-                owner.ScreenConsole("Starting Connection!");
+                Debug.Log("Starting Connection!");
             };
 
             clientWS.OnError += (e) =>
             {
-                owner.ScreenConsole("Error! " + e);       
+                Debug.Log("Error! " + e);
+                FailedToConnect = true;
+             
             };
 
             clientWS.OnClose += (e) =>
             {
                 Closing = true;
-                owner.ScreenConsole("Connection closed!");
+                Debug.Log("Connection closed!");
             };
 
             clientWS.OnMessage += (bytes) =>
             {
                 // Reading a plain text message
+
                 var message = System.Text.Encoding.UTF8.GetString(bytes);
+//                Debug.Log("Receiving: " + message);
                 //owner.TCPHandleMessage(this, message);
-                this.msg.Append(message);
+                if (message.Length > 0)
+                {
+                    this.msg.Append((String)message.Clone());
+                }
             };
         await clientWS.Connect();
     }
@@ -345,11 +355,13 @@ public class GenCore : WebSocketBehavior
     {
         if (owner.IsListening && (owner.MaxConnections ==0 || owner.Connections.Count < owner.MaxConnections))
         {
+            Debug.Log("Accepting new client!");
             //base.OnOpen();
             this.Send("ID#" + owner.conCounter + "#" + owner.AppNumber + "\n");
             ConnectionID = owner.conCounter;
             owner.conCounter++;
             StartCall = System.DateTime.Now;
+            owner.conLimbo.Append(this);
         }
         else
         {
@@ -372,7 +384,7 @@ public class GenCore : WebSocketBehavior
     {
         try
         {
-            //Debug.Log(e.Data);
+            Debug.Log(e.Data);
             if (e.Data.StartsWith("ID#"))
             {
                 if (int.Parse(e.Data.Split('#')[2]) == owner.AppNumber)
@@ -394,11 +406,12 @@ public class GenCore : WebSocketBehavior
     {
         if (owner.IsServer)
         {
-            Send(msg);
+           
+            SendAsync((string)msg.Clone(),(x)=>{ });
         }
         else
         {
-            clientWS.SendText(msg);
+            clientWS.SendText((string)msg.Clone()) ;
         }
     }
 }
@@ -425,7 +438,7 @@ public class GenericCore_Web : MonoBehaviour
     int CycleCounter = 0;
     protected WebSocketServer wss;
     NativeWebSocket.WebSocket websocket;
-
+    public ProducerConsumerQueue<GenCore> conLimbo = new ProducerConsumerQueue<GenCore>();
 
 
     // Start is called before the first frame update
@@ -558,6 +571,7 @@ public class GenericCore_Web : MonoBehaviour
             IsServer = true;
             IsConnected = true;
             IsListening = true;
+            LocalConnectionID = -1;
             wss.ReuseAddress = true;
             wss.AddWebSocketService<GenCore>("/", () => new GenCore(this) );
             Application.targetFrameRate = 30;
@@ -573,27 +587,45 @@ public class GenericCore_Web : MonoBehaviour
         //Client uses the native websocket client 
         //Gencore has two different types of websockets init.
         Application.targetFrameRate = 60;
-        if (!IsConnected)
+        if (!IsConnected | !IsClient)
         {
+            this.IsClient = true;
             GenCore temp = new GenCore(this);
             try
-            {   
-                temp.StartClient();
+            {
+                 temp.StartClient();
             }
             catch (Exception e)
             {
                 temp = null;
-                ScreenConsole("Starting client through: " + e.Message);
+                ScreenConsole("Starting client threw: " + e.Message);
+            }
+            int count = 0;
+            while(temp!=null&& temp.clientWS != null && temp.clientWS.State != NativeWebSocket.WebSocketState.Open)
+            {
+                Debug.Log("Waiting for Connection.");
+                yield return new WaitForSeconds(.1f);
+                count++;
+                if (temp.FailedToConnect || count > 15)
+                {
+                    temp = null;
+                    break;
+                }
             }
             if (temp != null)
             {
                 IsClient = true;
                 IsConnected = true;
                 IsServer = false;
+                Debug.Log("Adding client-side to Connections.");
                 Connections.Add(0, temp);
                 StartCoroutine(SlowUpdate());
                 yield return new WaitUntil(() => LocalConnectionID != -10);
                 StartCoroutine(OnClientConnect(LocalConnectionID));
+            }
+            else if(FindObjectOfType<LobbyManager>()== null)
+            {
+                Disconnect(0);
             }
         }   
     }
@@ -669,11 +701,12 @@ public class GenericCore_Web : MonoBehaviour
     }
     public async void  Disconnect(int id)
     {
+        Debug.Log("Disconnecting " + id);
 
         StartingDisconnect(id);
         if(IsClient)
         {
-            if (!Connections[0].Closing)
+            if (Connections.ContainsKey(0) && !Connections[0].Closing)
             {
                 await Connections[0].clientWS.Close();
             }
@@ -713,6 +746,15 @@ public class GenericCore_Web : MonoBehaviour
 
     private IEnumerator SlowUpdate()
     {
+       /* while(IsServer)
+        {
+            while(conLimbo.Count>0)
+            {
+                GenCore temp = conLimbo.Consume();
+                temp.SendMsg("ID#" + temp.ConnectionID + "#" + AppNumber + "\n");
+            }
+            yield return new WaitForSeconds(.1f);
+        }*/
         yield return new WaitForSeconds(1f);
         //Slow update no longer used.
     }

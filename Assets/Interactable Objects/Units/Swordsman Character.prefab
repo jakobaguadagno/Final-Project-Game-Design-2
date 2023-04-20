@@ -23,6 +23,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Swordsman Character
       objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2506948138527322048, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -51,9 +59,21 @@ PrefabInstance:
       propertyPath: Type
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 2747178385892861347, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Value
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 2747178385892861347, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_MaxValue
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 4889192084497162222, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: textToPut
       value: Swordsman
+      objectReference: {fileID: 0}
+    - target: {fileID: 5604532440006449426, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: unitHealth
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_RootOrder

@@ -91,11 +91,11 @@ public class hoverScript : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
         else if(textToPut == "" && !isServer)
         {
-            Debug.Log("No text");
+//            Debug.Log("No text");
         }
         else if(!isServer)
         {
-            Debug.Log("Text box is null");
+//            Debug.Log("Text box is null");
         }
     }
     public void OnPointerExit(PointerEventData eventData)
@@ -107,7 +107,7 @@ public class hoverScript : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
         else if(!isServer)
         {
-            Debug.Log("Text box is null");
+//            Debug.Log("Text box is null");
         }
     }
 }

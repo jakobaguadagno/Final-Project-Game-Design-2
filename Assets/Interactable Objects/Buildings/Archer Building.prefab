@@ -113,6 +113,18 @@ MonoBehaviour:
   IsDirty: 0
   spawnPoint: {fileID: 6723158734380689358}
   spawnObject: {fileID: 4078195096634306215, guid: 8e77a14e75756c64c98a56732027978a, type: 3}
-  woodCost: 10
-  ironCost: 0
+  woodCost: 50
+  ironCost: 10
   goldCost: 0
+  timeSlider: {fileID: 8154946473637871760}
+--- !u!114 &8154946473637871760 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 506532157640235939, guid: 36ed4f913ee44c145a3cd39cd3a1d6d4, type: 3}
+  m_PrefabInstance: {fileID: 8515076319060941619}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

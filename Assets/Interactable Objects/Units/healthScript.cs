@@ -8,7 +8,7 @@ public class healthScript : NetworkComponent
 {
 
     public bool isAlive = true;
-    private int unitHealth = 100;
+    public int unitHealth = 100;
     public Slider UnitHealth;
     public Animator MyAnime;
     private bool clientDeath = false;

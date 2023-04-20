@@ -58,31 +58,33 @@ public class mouseInteractionScript : NetworkComponent
                     if (selectedUnits.Contains(id.gameObject))
                     {
                         selectedUnits.Remove(id.gameObject);
+                        SendUpdate("REMOVESELECTUNITUI", value);
                         Debug.Log("Removing unit: " + id.gameObject.name);
                         int count = 0;
                         foreach(GameObject obj in selectedUnits.ToArray())
                         {
                             count++;
-                            Debug.Log("Unit " + count + ": " + obj.name);
+//                          Debug.Log("Unit " + count + ": " + obj.name);
                         }
                         if(count == 0)
                         {
-                            Debug.Log("No units in the list.");
+//                            Debug.Log("No units in the list.");
                         }
                     }
                     else
                     {
                         selectedUnits.Add(id.gameObject);
-                        Debug.Log("Adding unit: " + id.gameObject.name);
+                        SendUpdate("SELECTUNITUI", value);
+//                        Debug.Log("Adding unit: " + id.gameObject.name);
                         int count = 0;
                         foreach(GameObject obj in selectedUnits.ToArray())
                         {
                             count++;
-                            Debug.Log("Unit " + count + ": " + obj.name);
+//                            Debug.Log("Unit " + count + ": " + obj.name);
                         }
                         if(count == 0)
                         {
-                            Debug.Log("No units in the list.");
+//                           Debug.Log("No units in the list.");
                         }
                     }
                 }
@@ -93,6 +95,49 @@ public class mouseInteractionScript : NetworkComponent
             foreach(GameObject su in selectedUnits)
             {
                 selectedUnits.Remove(su);
+                NetworkID tempR = su.GetComponent<NetworkID>();
+                if(tempR != null)
+                {
+                    int tempInt = tempR.NetId;
+                    SendUpdate("REMOVESELECTUNITUI", tempInt.ToString());
+                }
+                
+            }
+        }
+        if(IsClient && flag == "SELECTUNITUI")
+        {
+            NetworkID[] temp = GameObject.FindObjectsOfType<NetworkID>();
+            if(temp!=null)
+            {
+                foreach(NetworkID id in temp)
+                {
+                    if(id.NetId == int.Parse(value))
+                    {
+                        vanillaCharacterScript unitTemp = id.gameObject.GetComponent<vanillaCharacterScript>();
+                        if(unitTemp!=null)
+                        {
+                            unitTemp.TurnOnSelectedUI();
+                        }
+                    }
+                }
+            }
+        }
+        if(IsClient && flag == "REMOVESELECTUNITUI")
+        {
+            NetworkID[] temp = GameObject.FindObjectsOfType<NetworkID>();
+            if(temp!=null)
+            {
+                foreach(NetworkID id in temp)
+                {
+                    if(id.NetId == int.Parse(value))
+                    {
+                        vanillaCharacterScript unitTemp = id.gameObject.GetComponent<vanillaCharacterScript>();
+                        if(unitTemp!=null)
+                        {
+                            unitTemp.TurnOffSelectedUI();
+                        }
+                    }
+                }
             }
         }
     }
@@ -138,7 +183,7 @@ public class mouseInteractionScript : NetworkComponent
                     }
                     if(count == 0)
                     {
-                        Debug.Log("Nothing to do.");
+//                        Debug.Log("Nothing to do.");
                     }
                     unitSpacing = .25f;
                     movingObject = false;
@@ -167,7 +212,7 @@ public class mouseInteractionScript : NetworkComponent
                             }
                             if(count == 0)
                             {
-                                Debug.Log("Nothing to do.");
+//                                Debug.Log("Nothing to do.");
                             }
                             attackingObject=false;
                         }
@@ -191,7 +236,7 @@ public class mouseInteractionScript : NetworkComponent
                         }
                         if(count == 0)
                         {
-                            Debug.Log("Nothing to do.");
+//                            Debug.Log("Nothing to do.");
                         }
                         attackingObject=false;
                     }
@@ -217,7 +262,7 @@ public class mouseInteractionScript : NetworkComponent
                             }
                             if(count == 0)
                             {
-                                Debug.Log("Nothing to do.");
+//                                Debug.Log("Nothing to do.");
                             }
                             attackingObject=false;
                         }
@@ -257,8 +302,8 @@ public class mouseInteractionScript : NetworkComponent
                 GameObject selectedObject = hit.collider.gameObject;
                 
 
-                Debug.Log("Unit's Name: " + selectedObject.name);
-                Debug.Log("Unit's Owner: " + netIDObject.Owner);
+//                Debug.Log("Unit's Name: " + selectedObject.name);
+//                Debug.Log("Unit's Owner: " + netIDObject.Owner);
 
                 if(netIDObject.Owner == MyCore.LocalPlayerId)
                 {
@@ -277,8 +322,8 @@ public class mouseInteractionScript : NetworkComponent
                 GameObject selectedObject = hit.collider.gameObject;
                 
 
-                Debug.Log("Building's Name: " + selectedObject.name);
-                Debug.Log("Building's Owner: " + netIDObject.Owner);
+//                Debug.Log("Building's Name: " + selectedObject.name);
+//                Debug.Log("Building's Owner: " + netIDObject.Owner);
 
                 if(netIDObject.Owner == MyCore.LocalPlayerId)
                 {
@@ -317,12 +362,12 @@ public class mouseInteractionScript : NetworkComponent
                     }
                     else
                     {
-                        Debug.Log("No script attached");
+//                        Debug.Log("No script attached");
                     }
                 }
                 else
                 {
-                    Debug.Log("Building " + selectedObject.name + " does not belong to you.");
+//                    Debug.Log("Building " + selectedObject.name + " does not belong to you.");
                 }
             }
         }
@@ -338,14 +383,14 @@ public class mouseInteractionScript : NetworkComponent
             if (hit.collider != null && (hit.collider.gameObject.CompareTag("Player")||hit.collider.gameObject.CompareTag("Unit")||hit.collider.gameObject.CompareTag("Gold")||hit.collider.gameObject.CompareTag("Iron")||hit.collider.gameObject.CompareTag("Wood")))
             {
                 NetworkID netIDObject = hit.collider.gameObject.GetComponent<NetworkID>();
-                Debug.Log("Attack/Mine!");
+//                Debug.Log("Attack/Mine!");
                 SendCommand("ATTACKUNIT", netIDObject.NetId.ToString());
             }
             else
             {
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 worldPos2D = new Vector2 (worldPos.x, worldPos.y);
-                Debug.Log("Move!");
+//                Debug.Log("Move!");
                 SendCommand("MOVEUNIT", worldPos2D.ToString("F2"));
             }
         }
@@ -381,38 +426,3 @@ public class mouseInteractionScript : NetworkComponent
     }
 
 }
-
-/* 
-
-                if (selectedUnits.Contains(selectedObject))
-                    {
-                        selectedUnits.Remove(selectedObject);
-                        Debug.Log("Removing object: " + selectedObject.name);
-                        int count = 0;
-                        foreach(GameObject obj in selectedUnits)
-                        {
-                            count++;
-                            Debug.Log("Object " + count + ": " + obj.name);
-                        }
-                        if(count == 0)
-                        {
-                            Debug.Log("No objects in the list.");
-                        }
-                    }
-
-                else
-                {
-                    selectedUnits.Add(selectedObject);
-                        Debug.Log("Adding object: " + selectedObject.name);
-                        int count = 0;
-                        foreach(GameObject obj in selectedUnits)
-                        {
-                            count++;
-                            Debug.Log("Object " + count + ": " + obj.name);
-                        }
-                        if(count == 0)
-                        {
-                            Debug.Log("No objects in the list.");
-                        }
-                }
-*/

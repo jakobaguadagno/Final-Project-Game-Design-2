@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: isVillager
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -1242877479670350376, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: unitDamage
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 374208724947658722, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_Name
       value: Villager Character
@@ -26,6 +30,14 @@ PrefabInstance:
     - target: {fileID: 974470336989705023, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_SortingOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1998742856977123225, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -63,9 +75,21 @@ PrefabInstance:
       propertyPath: Type
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 2747178385892861347, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_Value
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2747178385892861347, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: m_MaxValue
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4889192084497162222, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: textToPut
       value: Villager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5604532440006449426, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
+      propertyPath: unitHealth
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6636416961386602216, guid: 2e6ebf11d63f0c2488b72f1d3fd614e8, type: 3}
       propertyPath: m_RootOrder

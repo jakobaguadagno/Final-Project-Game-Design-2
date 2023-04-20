@@ -21,6 +21,7 @@ public class GameMasterScript : NetworkComponent
     public Text egsPlayer3Score;
     public Text egsPlayer4Score;
     public GameObject[] playerScoreUI;
+    public GameObject[] winnerUI;
     public bool paused = true;
     public bool end = true;
     public int[] playerScores = {0,0,0,0};
@@ -34,6 +35,7 @@ public class GameMasterScript : NetworkComponent
     private bool setAudioMid = false;
     private bool setAudioEnd = false;
     private bool setSound = false;
+    public int winner = -1;
 
     public override void HandleMessage(string flag, string value)
     {
@@ -73,12 +75,18 @@ public class GameMasterScript : NetworkComponent
                 playerScores[1] = int.Parse(args[1]);
                 playerScores[2] = int.Parse(args[2]);
                 playerScores[3] = int.Parse(args[3]);
+                winner = int.Parse(args[4]);
+                if(winner>=0||winner<=3)
+                {
+                    winnerUI[winner].SetActive(true);
+                }
                 Debug.Log(playerScores[0].ToString() + ", " + playerScores[1].ToString() + ", " + playerScores[2].ToString() + ", " + playerScores[3].ToString());
+                Debug.Log("Winner: " + winner);
             }
         }
         if(flag == "PLAYERSCOREUI" && IsClient)
         {
-            Debug.Log(value);
+//            Debug.Log(value);
             string[] args = value.Split(',');
             playerScoresActiveCheck[0] = int.Parse(args[0]); 
             playerScoresActiveCheck[1] = int.Parse(args[1]);
@@ -300,6 +308,13 @@ public class GameMasterScript : NetworkComponent
                 }
                 if(pcCheck.Length < 2)
                 {
+                    foreach(PlayerCharacter p in pcCheck)
+                    {
+                        if(p!=null)
+                        {
+                            winner = p.GetComponent<NetworkID>().Owner;
+                        }
+                    }
                     StopCoroutine(gameTime);
                     paused = false;
                 }
@@ -317,7 +332,7 @@ public class GameMasterScript : NetworkComponent
 
             Debug.Log("End Screen");
 
-            SendUpdate("ENDSCREEN", playerScores[0].ToString() + ", " + playerScores[1].ToString() + ", " + playerScores[2].ToString() + ", " + playerScores[3].ToString());
+            SendUpdate("ENDSCREEN", playerScores[0].ToString() + ", " + playerScores[1].ToString() + ", " + playerScores[2].ToString() + ", " + playerScores[3].ToString() + ", " + winner.ToString());
 
             //End Screen Logic
 

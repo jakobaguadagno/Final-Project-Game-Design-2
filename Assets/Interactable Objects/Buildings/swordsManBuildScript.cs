@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NETWORK_ENGINE;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class swordsManBuildScript : NetworkComponent
 {
@@ -15,6 +16,11 @@ public class swordsManBuildScript : NetworkComponent
     private bool serverSetTeam = false;
     private bool clientUnitColorSet = false;
     private Color unitColor = new Color(1,1,1,1);
+    private bool spawnTimeDone = false;
+    private int spawnTime = 10;
+    private int currentTime = 0;
+    public Slider timeSlider;
+    private bool coCheck = false;
 
     public Color ParseCV4(string v)
     {
@@ -36,12 +42,32 @@ public class swordsManBuildScript : NetworkComponent
     {
         if(IsServer && flag == "SWORDSMANOBJ")
         {
-            spawn = bool.Parse(value);
+            PlayerCharacter[] allP = FindObjectsOfType<PlayerCharacter>();
+            foreach(PlayerCharacter pc in allP)
+            {
+                if(pc.GetComponent<NetworkComponent>().Owner == gameObject.GetComponent<NetworkComponent>().Owner)
+                {
+                    if((pc.playerWood>=woodCost)&&(pc.playerIron>=ironCost)&&(pc.playerGold>=goldCost))
+                    {
+                        if(!coCheck)
+                        {
+                            pc.RemoveResources(woodCost, ironCost, goldCost);
+                            StartCoroutine(SpawnTime(spawnTime));
+                        }
+                        spawn = bool.Parse(value);
+                    }
+                }
+            }
         }
         if(IsClient && flag == "UNITCOLOR")
         {
             unitColor = ParseCV4(value);
             clientUnitColorSet = true;
+        }
+        if(IsClient && flag == "SPAWNINGTIME")
+        {
+            //Debug.Log(value);
+            timeSlider.value = int.Parse(value);
         }
     }
 
@@ -104,7 +130,7 @@ public class swordsManBuildScript : NetworkComponent
                         }
                     }
                 }
-                if(spawn)
+                if(spawn && spawnTimeDone)
                 {
                     PlayerCharacter[] allP = FindObjectsOfType<PlayerCharacter>();
                     foreach(PlayerCharacter pc in allP)
@@ -114,12 +140,11 @@ public class swordsManBuildScript : NetworkComponent
                             if((pc.playerWood>=woodCost)&&(pc.playerIron>=ironCost)&&(pc.playerGold>=goldCost))
                             {
                                 MyCore.NetCreateObject(spawnObject.GetComponent<NetworkID>().Type, gameObject.GetComponent<NetworkComponent>().Owner, spawnPoint.transform.position);
-                                pc.RemoveResources(woodCost, ironCost, goldCost);
                                 pc.AddScore(10);
                             }
                         }
                     }
-                    spawn = false;
+                    SpawnFalse();
                 }
             }
             yield return new WaitForSeconds(.1f);
@@ -165,5 +190,33 @@ public class swordsManBuildScript : NetworkComponent
     {
         SendCommand("SWORDSMANOBJ", true.ToString());
         Debug.Log("Swordsman Spawn");
+    }
+
+    public IEnumerator SpawnTime(int s)
+    {
+        while(true)
+        {
+            coCheck = true;
+            while(!spawnTimeDone)
+            {
+                SendUpdate("SPAWNINGTIME", currentTime.ToString());
+                yield return new WaitForSeconds(1);
+                currentTime++;
+                if(currentTime == s)
+                {
+                    SendUpdate("SPAWNINGTIME", currentTime.ToString());
+                    spawnTimeDone = true;
+                }
+            }
+            currentTime = 0;
+            SendUpdate("SPAWNINGTIME", currentTime.ToString());
+            yield break;
+        }
+    }
+    private void SpawnFalse()
+    {
+        spawn = false;
+        spawnTimeDone = false;
+        coCheck = false;
     }
 }
