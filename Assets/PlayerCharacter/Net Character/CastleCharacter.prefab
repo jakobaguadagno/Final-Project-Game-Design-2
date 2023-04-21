@@ -5598,9 +5598,9 @@ MonoBehaviour:
   playerName: Blank
   playerScore: 0
   playerHealth: 2000
-  playerWood: 3000
-  playerIron: 3000
-  playerGold: 3000
+  playerWood: 30
+  playerIron: 0
+  playerGold: 0
   teamColor: {r: 1, g: 1, b: 1, a: 1}
   isAlive: 1
   disconnectUI: {fileID: 0}

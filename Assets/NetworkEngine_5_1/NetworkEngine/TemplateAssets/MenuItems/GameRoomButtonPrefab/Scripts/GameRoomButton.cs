@@ -29,7 +29,7 @@ public class GameRoomButton : MonoBehaviour
         {
             throw new System.Exception("ERROR: Could not find NetworkCore or Network Lobby");
         }
-        MyText.text = "Game Name: "+GameName + "\nPlayers: " + Players.ToString() + "/" + MyCore.MaxConnections.ToString() + "\t\tGame ID:" + name;
+        MyText.text = "Game Name: "+ GameName;
     }
     public void JoinGame()
     {

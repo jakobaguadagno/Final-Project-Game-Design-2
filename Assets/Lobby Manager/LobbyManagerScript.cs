@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NETWORK_ENGINE;
 
+
 public class LobbyManagerScript : NetworkComponent
 {
     public string playerName;
@@ -42,6 +43,7 @@ public class LobbyManagerScript : NetworkComponent
 
     public override void NetworkedStart()
     {
+        
        if(!IsLocalPlayer)
         {
             this.transform.GetChild(0).gameObject.SetActive(false);

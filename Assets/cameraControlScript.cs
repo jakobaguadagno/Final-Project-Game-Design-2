@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NETWORK_ENGINE;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class cameraControlScript : MonoBehaviour
 {
@@ -93,8 +94,17 @@ public class cameraControlScript : MonoBehaviour
         }
         if(disconnectUI == null)
         {
-            disconnectUI = GameObject.Find("LanNetworkManager");
-            disconnectUI = disconnectUI.transform.GetChild(0).GetChild(1).gameObject;
+            if(SceneManager.GetActiveScene().buildIndex == 2)
+            {
+                disconnectUI = GameObject.Find("LanNetworkManager");
+                disconnectUI = disconnectUI.transform.GetChild(0).GetChild(1).gameObject;
+            }
+            if(SceneManager.GetActiveScene().buildIndex == 1)
+            {
+                disconnectUI = GameObject.Find("WANNetworkManager");
+                disconnectUI = disconnectUI.transform.GetChild(0).GetChild(1).gameObject;
+            }
+            
             Debug.Log(disconnectUI.name);
             disconnectUI.SetActive(false);
         }

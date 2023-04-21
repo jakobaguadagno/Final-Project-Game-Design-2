@@ -181,16 +181,35 @@ public class GameMasterScript : NetworkComponent
 
     public override void NetworkedStart()
     {
-
+        if(SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            Debug.Log("Turn Off Panel");
+            GameObject wan = GameObject.Find("WANNetworkManager");
+            if(wan!=null)
+            {
+                if(wan.transform.GetChild(0).GetChild(0).gameObject!=null)
+                {
+                    wan.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     public override IEnumerator SlowUpdate()
     {
         if (IsServer)
         {
-
-            GameObject lan = GameObject.Find("LanNetworkManager");
-            lan.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+            if(SceneManager.GetActiveScene().buildIndex == 2)
+            {
+                GameObject lan = GameObject.Find("LanNetworkManager");
+                lan.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+            }
+            if(SceneManager.GetActiveScene().buildIndex == 1)
+            {
+                GameObject wan = GameObject.Find("WANNetworkManager");
+                wan.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+            }
+            
 
             serverManager = GameObject.FindObjectsOfType<GenericCore_Web>();
     
@@ -271,6 +290,14 @@ public class GameMasterScript : NetworkComponent
                         break;
                 }
             }
+            //This code will remove the game room from the lobby.
+            //And prevent people from joining the game once it starts.
+            if(FindObjectOfType<LobbyManager>()!= null)
+            {
+                FindObjectOfType<LobbyManager>().NotifyGameStarted();
+            }
+            MyCore.StopListening();
+            //End of code snippit.
             SendUpdate("PLAYERSCOREUI", playerScoresActiveCheck[0].ToString() + ", " + playerScoresActiveCheck[1].ToString() + ", " + playerScoresActiveCheck[2].ToString() + ", " + playerScoresActiveCheck[3].ToString());
             Debug.Log("Ready");
 

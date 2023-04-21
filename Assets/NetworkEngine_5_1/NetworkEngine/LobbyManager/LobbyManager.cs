@@ -107,7 +107,7 @@ public class LobbyManager : GenericCore_Web
                     StartCoroutine(StartClient());
 
                     //StartCoroutine(SlowAgentStart());
-                    //MyCore.IP = this.IP;
+                    MyCore.IP = this.IP;
 
                     StartCoroutine(SlowStart());
                 }
@@ -119,7 +119,8 @@ public class LobbyManager : GenericCore_Web
 
             if (a.Contains("MASTER"))
             {
-               StartServer();
+                IP = FloridaPolyIP;
+                StartServer();
             }
         }
         if (!IsConnected)
