@@ -94,14 +94,13 @@ public class mouseInteractionScript : NetworkComponent
         {
             foreach(GameObject su in selectedUnits)
             {
-                selectedUnits.Remove(su);
                 NetworkID tempR = su.GetComponent<NetworkID>();
                 if(tempR != null)
                 {
                     int tempInt = tempR.NetId;
                     SendUpdate("REMOVESELECTUNITUI", tempInt.ToString());
                 }
-                
+                selectedUnits.Remove(su);
             }
         }
         if(IsClient && flag == "SELECTUNITUI")

@@ -114,7 +114,6 @@ public class GameMasterScript : NetworkComponent
     {
         if(userSound == null)
         {
-//            Debug.Log("Finding Sound");
             userSound = GameObject.FindObjectOfType<volumeScript>();
         }
         if(userSound != null && !setSound)
@@ -122,6 +121,7 @@ public class GameMasterScript : NetworkComponent
             audioSource.volume = userSound.volume/100;
             setSound = true;
         }
+        
         if(userSound != null && audioSource.volume != (userSound.volume/100))
         {
             audioSource.volume = userSound.volume/100;
@@ -145,6 +145,16 @@ public class GameMasterScript : NetworkComponent
             {
                 if(!setAudioStart)
                 {
+                        GameObject wan = GameObject.Find("WANNetworkManager");
+                        if(wan!=null)
+                        {
+                            AudioSource wanAS = wan.GetComponent<AudioSource>();
+                            if(wanAS != null)
+                            {
+                                wanAS.Stop();
+                            }
+                        }
+                        
                         Debug.Log("Start Song");
                         audioSource.clip = endOfGame;
                         audioSource.loop = true;

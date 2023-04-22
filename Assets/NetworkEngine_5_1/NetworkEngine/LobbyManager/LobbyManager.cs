@@ -107,7 +107,7 @@ public class LobbyManager : GenericCore_Web
                     StartCoroutine(StartClient());
 
                     //StartCoroutine(SlowAgentStart());
-                    MyCore.IP = this.IP;
+                    MyCore.IP = FloridaPolyIP;
 
                     StartCoroutine(SlowStart());
                 }
@@ -144,61 +144,79 @@ public class LobbyManager : GenericCore_Web
     /// <returns>IEnumerator to allow for delays.</returns>
     public IEnumerator SlowAgentStart()
     {
-        bool UsePublic = false;
+        /*bool UsePublic = false;
         bool UseFlorida = false;
-#if !UNITY_WEBGL
-        //Ping Public Ip address to see if we are external..........
-        Debug.Log("Trying Public IP Address: " + PublicIP.ToString());
-        System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping();
-        System.Net.NetworkInformation.PingOptions po = new System.Net.NetworkInformation.PingOptions();
-        po.DontFragment = true;
-        string data = "HELLLLOOOOO!";
-        byte[] buffer = ASCIIEncoding.ASCII.GetBytes(data);
-        int timeout = 500;
-        System.Net.NetworkInformation.PingReply pr = ping.Send(PublicIP, timeout, buffer, po);
-        yield return new WaitForSeconds(1.5f);
-        Logger("Ping Return: " + pr.Status.ToString());
-        if(pr.Status == System.Net.NetworkInformation.IPStatus.Success)
-        {
-            Debug.Log("The public IP responded with a roundtrip time of: " + pr.RoundtripTime);
-            UsePublic = true;
-            IP = PublicIP;
-        }
-        else
-        {
-            Debug.Log("The public IP failed to respond");
-            UsePublic = false;
-        }
-        //-------------------If not public, ping Florida Poly for internal access.
-        if(!UsePublic)
-        {
-            Debug.Log("Trying Florida Poly Address: " + FloridaPolyIP.ToString());
-            pr = ping.Send(FloridaPolyIP, timeout, buffer, po);
-            yield return new WaitForSeconds(1.5f);
-            Logger("Ping Return: " + pr.Status.ToString());
-            if (pr.Status.ToString() == "Success")
-            {
-                Debug.Log("The Florida Poly IP responded with a roundtrip time of: " + pr.RoundtripTime);
-                UseFlorida = true;
-                IP = FloridaPolyIP;
-            }
-            else
-            {
-                Debug.Log("The Florida Poly IP failed to respond");
-                UseFlorida = false;
-            }
-        }
-        //Otherwise use local host, assume testing.
-        if(!UsePublic && !UseFlorida)
-        {
-            IP = "127.0.0.1";
-            Debug.Log("Using Home Address!");
-        }
-#elif UNITY_WEBGL
+        /*#if !UNITY_WEBGL
+                //Ping Public Ip address to see if we are external..........
+                Debug.Log("Trying Public IP Address: " + PublicIP.ToString());
+                System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping();
+                System.Net.NetworkInformation.PingOptions po = new System.Net.NetworkInformation.PingOptions();
+                po.DontFragment = true;
+                string data = "HELLLLOOOOO!";
+                byte[] buffer = ASCIIEncoding.ASCII.GetBytes(data);
+                int timeout = 500;
+                System.Net.NetworkInformation.PingReply pr = ping.Send(PublicIP, timeout, buffer, po);
+                yield return new WaitForSeconds(1.5f);
+                Logger("Ping Return: " + pr.Status.ToString());
+                if(pr.Status == System.Net.NetworkInformation.IPStatus.Success)
+                {
+                    Debug.Log("The public IP responded with a roundtrip time of: " + pr.RoundtripTime);
+                    UsePublic = true;
+                    IP = PublicIP;
+                }
+                else
+                {
+                    Debug.Log("The public IP failed to respond");
+                    UsePublic = false;
+                }
+                //-------------------If not public, ping Florida Poly for internal access.
+                if(!UsePublic)
+                {
+                    Debug.Log("Trying Florida Poly Address: " + FloridaPolyIP.ToString());
+                    pr = ping.Send(FloridaPolyIP, timeout, buffer, po);
+                    yield return new WaitForSeconds(1.5f);
+                    Logger("Ping Return: " + pr.Status.ToString());
+                    if (pr.Status.ToString() == "Success")
+                    {
+                        Debug.Log("The Florida Poly IP responded with a roundtrip time of: " + pr.RoundtripTime);
+                        UseFlorida = true;
+                        IP = FloridaPolyIP;
+                    }
+                    else
+                    {
+                        Debug.Log("The Florida Poly IP failed to respond");
+                        UseFlorida = false;
+                    }
+                }
+                //Otherwise use local host, assume testing.
+                if(!UsePublic && !UseFlorida)
+                {
+                    IP = "127.0.0.1";
+                    Debug.Log("Using Home Address!");
+                }
+        #elif UNITY_WEBGL
+                IP = PublicIP;
+                yield return new WaitForSeconds(.1f);
+        #endif*/
+        Debug.Log("Attempting to connect to public IP.");
         IP = PublicIP;
-        yield return new WaitForSeconds(.1f);
-#endif
-        StartCoroutine(StartClient()); ;
+        yield return StartCoroutine(StartClient()); 
+        if(!IsConnected)
+        {
+            Debug.Log("Attempting to connect to private IP.");
+            IP = FloridaPolyIP;
+            yield return StartCoroutine(StartClient());
+            if(!IsConnected)
+            {
+                Debug.Log("Attempting to connec to local host.");
+                IP = "127.0.0.1";
+                yield return StartCoroutine(StartClient());
+                if(!IsConnected)
+                {
+                    throw new System.Exception("ERROR: COULD NOT CONECT TO SERVER!");
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -359,10 +377,10 @@ public class LobbyManager : GenericCore_Web
             Debug.Log("Joining game ID " + g.Split('#')[1].Trim());
             MyCore.PortNumber = int.Parse(g.Split('#')[1].Trim());
             MyCore.UI_StartClient();
-            if (MyCore.IsConnected && MyCore.IsClient)
-            {
+            //if (MyCore.IsConnected && MyCore.IsClient)
+            //{
                 StartCoroutine(MenuManager());
-            }
+            //}
         }
     }
   /// <summary>

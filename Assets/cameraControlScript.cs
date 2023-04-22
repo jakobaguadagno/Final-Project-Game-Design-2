@@ -19,6 +19,8 @@ public class cameraControlScript : MonoBehaviour
     public NetworkCore core;
     private bool spawnLocFound = false;
     private int spawnNumber = 0;
+    public GameMasterScript gm;
+    private bool movementEnabled = false;
 
     public void OnDirectionChanged(InputAction.CallbackContext context)
     {
@@ -43,6 +45,17 @@ public class cameraControlScript : MonoBehaviour
 
     void Update()
     {
+        if(gm==null)
+        {
+            gm = FindObjectOfType<GameMasterScript>();
+        }
+        if(gm!=null && !movementEnabled)
+        {
+            if(gm.GameStarted)
+            {
+                movementEnabled = true;
+            }
+        }
         if(!spawnLocFound)
         {
             core = GameObject.FindObjectOfType<NetworkCore>();
@@ -51,7 +64,7 @@ public class cameraControlScript : MonoBehaviour
                 {
                     if(core.IsServer)
                     {
-                        Debug.Log("Server");
+//                        Debug.Log("Server");
                         transform.position = new Vector3(GameObject.Find("Spawn 1").transform.position.x,GameObject.Find("Spawn 1").transform.position.y,-5);
                         spawnLocFound = true;
                     }
@@ -108,7 +121,7 @@ public class cameraControlScript : MonoBehaviour
             Debug.Log(disconnectUI.name);
             disconnectUI.SetActive(false);
         }
-        if(camDirection != Vector2.zero)
+        if(camDirection != Vector2.zero && movementEnabled)
         {
             mainCamera.transform.position += new Vector3(camDirection.x,camDirection.y,0) * cameraSpeed * Time.deltaTime;
         }
